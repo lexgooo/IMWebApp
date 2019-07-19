@@ -1,22 +1,25 @@
 import * as React from 'react'
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 
 import BottomNavigation from './Components/BottomNavigation/index'
 import MsgList from './Pages/MsgList'
+import Contacts from './Pages/Contacts'
+import Profile from './Pages/Profile'
 
 export default class App extends React.Component {
-    private mainStyle:{} = {
+    private mainStyle: {} = {
         display: 'flex',
         flexDirection: 'column',
         height: '100vh'
     }
-    private pageStyle:{} = {
+    private pageStyle: {} = {
         flex: '1'
     }
     public state = {
         navs: [
             {
                 value: 'msgList',
-                label: '消息列表',
+                label: '消息',
                 icon: 'icon-message'
             },
             {
@@ -26,19 +29,24 @@ export default class App extends React.Component {
             },
             {
                 value: 'profile',
-                label: '个人中心',
+                label: '我',
                 icon: 'icon-gerenzhongxin'
             }
         ]
     }
     public render() {
         return (
-            <div style={this.mainStyle}>
-                <div style={this.pageStyle}>
-                    <MsgList />
+            <Router>
+                <div style={this.mainStyle}>
+                    <div style={this.pageStyle}>
+                        <Route exact path="/msgList" component={MsgList} />
+                        <Route path='/contacts' component={Contacts}></Route>
+                        <Route path='/profile' component={Profile}></Route>
+                        <Redirect from='/' to='/msgList' />
+                    </div>
+                    <BottomNavigation navs={this.state.navs} />
                 </div>
-                <BottomNavigation navs={this.state.navs} />
-            </div>
+            </Router>
         )
     }
 }

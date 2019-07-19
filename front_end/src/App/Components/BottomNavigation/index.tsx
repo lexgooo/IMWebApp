@@ -8,11 +8,6 @@ interface navPorps {
         icon:string
     }[]
 }
-const navStyle:{} = {
-    display: 'flex',
-    justifyContent: 'space-between',
-    height: '60px'
-}
 export default class BottomNavigation extends React.Component<navPorps, {}> {
 
     private navItems(navs:any[]):any[] {
@@ -21,8 +16,16 @@ export default class BottomNavigation extends React.Component<navPorps, {}> {
         })
     }
 
+    private navStyle:{} = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        height: '60px',
+        background: 'rgba(215, 215, 215, 0.6)'
+    }
+
     public render () {
-        return (<ul style={navStyle}>
+        return (<ul style={this.navStyle}>
             {this.navItems(this.props.navs)}
         </ul>)
     }
