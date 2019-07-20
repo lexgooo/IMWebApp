@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 
 import TopBar from './Components/TopBar/index'
 import BottomNavigation from './Components/BottomNavigation/index'
-import MsgList from './Pages/MsgList'
+import MsgList from './Pages/MsgList/index'
 import Contacts from './Pages/Contacts'
 import Profile from './Pages/Profile'
 
@@ -14,7 +14,8 @@ export default class App extends React.Component {
         height: '100vh'
     }
     private pageStyle: {} = {
-        flex: '1'
+        flex: '1',
+        background: '#EDEDED'
     }
     public state = {
         navs: [
