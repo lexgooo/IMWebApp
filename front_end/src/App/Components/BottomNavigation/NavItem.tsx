@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
+import {Route, Link } from 'react-router-dom'
 interface itemProps {
     value: string
     label: string
@@ -8,16 +8,31 @@ interface itemProps {
 export default class NavItem extends Component<itemProps, {}> {
 
     private itemStyle:{} = {
-        textAlign: 'center'
+        textAlign: 'center',
     }
-    public render() {
+    private aTagStyle(location:any):{} {
+        console.log(location)
+        const color:string = location.pathname === `/${this.props.value}` ? '#03C160' : '#000'
+        return {
+            color,
+            textDecoration: 'none'
+        }
+    }
+    private children (location:any):{} {
         return (
-            <li key={this.props.value} style={this.itemStyle}>
-                <Link to={this.props.value}>
+            <li style={this.itemStyle}>
+                <Link to={this.props.value} style={this.aTagStyle(location)}>
                     <i className={`iconfont ${this.props.icon}`} />
                     <div style={{fontSize: '12px', paddingTop: '5px'}}>{this.props.label}</div>
                 </Link>
             </li>
+        )
+    }
+    public render() {
+        return (
+            <Route path={this.props.value} children = {({location}) => {
+                return this.children(location)
+            }}/>
         )
     }
 }

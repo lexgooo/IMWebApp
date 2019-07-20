@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 
+import TopBar from './Components/TopBar/index'
 import BottomNavigation from './Components/BottomNavigation/index'
 import MsgList from './Pages/MsgList'
 import Contacts from './Pages/Contacts'
@@ -38,6 +39,7 @@ export default class App extends React.Component {
         return (
             <Router>
                 <div style={this.mainStyle}>
+                    <TopBar navs={this.state.navs} />
                     <div style={this.pageStyle}>
                         <Route exact path="/msgList" component={MsgList} />
                         <Route path='/contacts' component={Contacts}></Route>
