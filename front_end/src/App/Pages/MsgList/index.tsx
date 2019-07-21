@@ -42,8 +42,8 @@ export default class MsgList extends React.Component {
 
     private rendItem():any[] {
         const list = [...this.state.msgList]
-        return list.map(item => {
-            return <ListItem item={item} key={item.id} />
+        return list.map((item, index) => {
+            return <ListItem item={item} index={index}  key={item.id} />
         })
     }
 
