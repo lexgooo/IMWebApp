@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 import TopBar from './Components/TopBar/index'
 import BottomNavigation from './Components/BottomNavigation/index'
 import MsgList from './Pages/MsgList/index'
-import Contacts from './Pages/Contacts'
+import Contacts from './Pages/Contacts/index'
 import Profile from './Pages/Profile'
 
 export default class App extends React.Component {
@@ -15,7 +15,8 @@ export default class App extends React.Component {
     }
     private pageStyle: {} = {
         flex: '1',
-        background: '#EDEDED'
+        background: '#EDEDED',
+        overflow: 'hidden'
     }
     public state = {
         navs: [
