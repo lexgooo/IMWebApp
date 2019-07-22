@@ -11,7 +11,6 @@ export default class NavItem extends Component<itemProps, {}> {
         textAlign: 'center',
     }
     private aTagStyle(location:any):{} {
-        console.log(location)
         const color:string = location.pathname === `/${this.props.value}` ? '#03C160' : '#000'
         return {
             color,

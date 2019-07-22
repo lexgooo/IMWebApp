@@ -26,9 +26,13 @@
         - [x] 新增标题条组件
         - [x] 新增导航栏组件
         - [ ] 消息页
+            - [x] 实现部分 `border` 下划线效果
         - [ ] 联系人页
         - [ ] 个人中心页
 
 ## 疑问收集
 - [ ] 如何区分类型和接口的用法？理解接口的使用
 - [ ] 如果不用 window.location 怎么在 router 的子组件中获得当前路由对象
+- [x] 外挂的 css 文件怎么自动加上前缀  
+    样式使用 styled-components 和 styled-components-ts 来处理
+- [ ] moment.js 的本地化设置没有起效

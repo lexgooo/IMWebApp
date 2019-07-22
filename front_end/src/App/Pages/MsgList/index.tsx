@@ -8,34 +8,30 @@ export default class MsgList extends React.Component {
             {
                 id: '1',
                 userName: '用户1',
-                time: '1563588656893',
+                time: '2019-07-22 11:06:36',
                 lastMsg: '最后一条消息内容',
-                unread: 1,
-                avator: './avator/640.jpeg'
+                unread: 1
             },
             {
                 id: '2',
                 userName: '用户2',
-                time: '1563588656893',
+                time: '2019-07-22 11:06:36',
                 lastMsg: '最后一条消息内容',
-                unread: 38,
-                avator: './avator/6401.jpeg'
+                unread: 38
             },
             {
                 id: '3',
                 userName: '用户3',
-                time: '1563588656893',
+                time: '2019-07-22 11:06:36',
                 lastMsg: '最后一条消息内容',
-                unread: 200,
-                avator: './avator/6402.jpeg'
+                unread: 200
             },
             {
                 id: '4',
                 userName: '用户4',
-                time: '1563588656893',
+                time: '2019-07-22 11:06:36',
                 lastMsg: '最后一条消息内容',
-                unread: 0,
-                avator: './avator/640.jpeg'
+                unread: 0
             }
         ]
     }
