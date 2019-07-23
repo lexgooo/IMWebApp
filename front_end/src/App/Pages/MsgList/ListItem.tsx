@@ -1,6 +1,6 @@
 import * as React from 'react'
 import moment from 'moment'
-import avatarAlt from '../avatar/alt.png'
+import avatarAlt from '../../../images/alt.png'
 import Item from './Item'
 
 moment.locale('zh-cn') // 没有起效

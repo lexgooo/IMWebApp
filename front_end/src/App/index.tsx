@@ -5,7 +5,7 @@ import TopBar from './Components/TopBar/index'
 import BottomNavigation from './Components/BottomNavigation/index'
 import MsgList from './Pages/MsgList/index'
 import Contacts from './Pages/Contacts/index'
-import Profile from './Pages/Profile'
+import Profile from './Pages/Profile/index'
 
 export default class App extends React.Component {
     private mainStyle: {} = {

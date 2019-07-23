@@ -1,6 +1,6 @@
 import * as React from 'react'
 import ItemStyleComp from './ItemStyleComp'
-import altAvatar from '../avatar/alt.png'
+import altAvatar from '../../../images/alt.png'
 
 export interface contactProps {
     id:string
