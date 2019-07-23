@@ -2,9 +2,9 @@ import * as React from 'react'
 import LetterItem from './LetterItem'
 
 export default class Contacts extends React.Component<{}, {}> {
-    private nomalGap:number = 12
+    private normalGap:number = 12
     public state = {
-        currentLetter: 'A',
+        currentLetter: '',
         contactList: [
             {
                 initial: 'A',
@@ -107,30 +107,34 @@ export default class Contacts extends React.Component<{}, {}> {
     private renderItem():any {
         const letterList = [...this.state.contactList]
         return letterList.map(item => {
-            return <LetterItem initial={item.initial} list={item.list} key={item.initial} />
+            return <LetterItem setParentState={this.setParentState} initial={item.initial} list={item.list} key={item.initial} />
         })
     }
-    private currentLetterStyle:object = {
-        background: '#fff',
-        color: '#03C160',
-        fontSize: '14px',
-        padding: `${this.nomalGap}px`,
-        borderBottom: '1px solid #E7E7E7',
-        height: '38px',
-        boxSizing: 'border-box'
+    private currentLetterStyle():object {
+        return {
+            background: '#fff',
+            color: '#03C160',
+            fontSize: '16px',
+            padding: `${this.normalGap}px`,
+            borderBottom: '1px solid #E7E7E7',
+            height: '38px',
+            boxSizing: 'border-box',
+            display: this.state.currentLetter ? 'block' : 'none'
+        }
     }
     private contactsStyle:object = {
         flex: '1',
         overflowY: 'scroll'
     }
-    render() {
+    protected setParentState:any = this.setState.bind(this)
+    public render() {
         return (
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 height: '100%'
             }}>
-                <h2 style={this.currentLetterStyle}>{this.state.currentLetter}</h2>
+                <h3 style={this.currentLetterStyle()}>{this.state.currentLetter}</h3>
                 <ul style={this.contactsStyle}>
                     {this.renderItem()}
                 </ul>
