@@ -111,7 +111,7 @@ export default class Contacts extends React.Component<{}, {}> {
         })
     }
     private currentLetterStyle:object = {
-        bacground: '#fff',
+        background: '#fff',
         color: '#03C160',
         fontSize: '14px',
         padding: `${this.nomalGap}px`,
@@ -123,9 +123,6 @@ export default class Contacts extends React.Component<{}, {}> {
         flex: '1',
         overflowY: 'scroll'
     }
-    private haddleScroll():any {
-        console.log('滚动事件')
-    }
     render() {
         return (
             <div style={{
@@ -134,7 +131,7 @@ export default class Contacts extends React.Component<{}, {}> {
                 height: '100%'
             }}>
                 <h2 style={this.currentLetterStyle}>{this.state.currentLetter}</h2>
-                <ul style={this.contactsStyle} onScroll={this.haddleScroll()}>
+                <ul style={this.contactsStyle}>
                     {this.renderItem()}
                 </ul>
             </div>
