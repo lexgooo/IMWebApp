@@ -3,20 +3,34 @@ import NavItem from './NavItem'
 
 interface navPorps {
     navs: {
-        value:string,
-        label:string,
-        icon:string
+        value: string
+        label: string
+        icon: string
     }[]
+    currentRoute?: {
+        path: string
+        component: any
+        title: string
+        name?: string
+        back?: boolean
+    }
 }
 export default class BottomNavigation extends React.Component<navPorps, {}> {
-
-    private navItems(navs:any[]):any[] {
-        return navs.map((item) => {
-            return <NavItem value={item.value} label={item.label} icon={item.icon} key={item.value} />
+    private navItems(navs: any[]): any[] {
+        return navs.map(item => {
+            return (
+                <NavItem
+                    value={item.value}
+                    label={item.label}
+                    icon={item.icon}
+                    key={item.value}
+                    currentRoute={this.props.currentRoute}
+                />
+            )
         })
     }
 
-    private navStyle:{} = {
+    private navStyle: {} = {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-around',
@@ -24,9 +38,7 @@ export default class BottomNavigation extends React.Component<navPorps, {}> {
         background: 'rgba(215, 215, 215, 0.6)'
     }
 
-    public render () {
-        return (<ul style={this.navStyle}>
-            {this.navItems(this.props.navs)}
-        </ul>)
+    public render() {
+        return <ul style={this.navStyle}>{this.navItems(this.props.navs)}</ul>
     }
 }

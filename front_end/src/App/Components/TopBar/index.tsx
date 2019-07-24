@@ -1,15 +1,16 @@
 import * as React from "react";
-import { Route } from "react-router-dom";
 
-interface navPorps {
-	navs: {
-		value: string;
-		label: string;
-		icon: string;
-	}[];
+export interface navProps {
+	currentRoute: {
+		path: string
+		component: any
+		title: string
+		name?: string
+		back?: boolean
+	} | undefined
 }
 
-export default class TopBar extends React.Component<navPorps, {}> {
+export default class TopBar extends React.Component<navProps, {}> {
 	private headerStyle = {
 		height: "42px",
 		background: "#E3E3E3",
@@ -17,13 +18,7 @@ export default class TopBar extends React.Component<navPorps, {}> {
 		alignItems: "center",
 		justifyContent: "center"
 	};
-	private header(location:any) {
-        let title:string = ''
-        this.props.navs.forEach(item => {
-            if(location.pathname === `/${item.value}`) {
-                title = item.label
-            }
-        })
+	public render() {
 		return (
 			<header style={this.headerStyle}>
 				<h1
@@ -31,12 +26,9 @@ export default class TopBar extends React.Component<navPorps, {}> {
 						fontSize: "18px"
 					}}
 				>
-					{title}
+					{this.props.currentRoute && this.props.currentRoute.title}
 				</h1>
 			</header>
 		);
-	}
-	public render() {
-		return <Route children={({ location }) => this.header(location)} />;
 	}
 }
