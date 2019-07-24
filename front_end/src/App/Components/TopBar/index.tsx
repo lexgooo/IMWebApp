@@ -16,11 +16,7 @@ export interface navProps {
 
 export default class TopBar extends React.Component<navProps, {}> {
 	private headerStyle = {
-		// height: "42px",
 		background: "#E3E3E3",
-		// display: "flex",
-		// alignItems: "center",
-		// justifyContent: "center",
 		padding: '15px 12px'
 
 	};
