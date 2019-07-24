@@ -7,11 +7,13 @@ export interface mainProps {
     routes: {
         path: string
         component: any
-        title: string
+        title?: string
         name?: string
         back?: boolean
+        navigation?: boolean
     }[]
-    location: any
+    location: any,
+    history: {}
 }
 
 export default class Main extends Component<mainProps, {}> {
@@ -30,6 +32,13 @@ export default class Main extends Component<mainProps, {}> {
         const currentPath = this.props.location.pathname
         const routes = [...this.props.routes]
         return routes.find(route => currentPath === route.path)
+    }
+
+    private renderNavigation() {
+        const currentRoute = this.currentRoute()
+        if (currentRoute && currentRoute.navigation) {
+            return <BottomNavigation currentRoute={currentRoute} navs={this.state.navs} />
+        }
     }
 
     public state = {
@@ -55,7 +64,7 @@ export default class Main extends Component<mainProps, {}> {
         const routes = this.props.routes
         return (
             <div style={this.mainStyle}>
-                <TopBar currentRoute={this.currentRoute()} />
+                <TopBar currentRoute={this.currentRoute()} search={this.props.location.search} history={this.props.history} />
                 <div style={this.pageStyle}>
                     {routes && routes.map((item, i) => {
                         return (
@@ -67,7 +76,7 @@ export default class Main extends Component<mainProps, {}> {
                         )
                     })}
                 </div>
-                <BottomNavigation currentRoute={this.currentRoute()} navs={this.state.navs} />
+                {this.renderNavigation()}
             </div>
         )
     }

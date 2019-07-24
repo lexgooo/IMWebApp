@@ -1,32 +1,55 @@
 import * as React from "react";
+import Qs from 'qs'
 
 export interface navProps {
-	currentRoute: {
+	currentRoute?: {
 		path: string
 		component: any
-		title: string
+		title?: string
 		name?: string
 		back?: boolean
-	} | undefined
+        navigation?: boolean
+	}
+	search?: string
+	history: any
 }
 
 export default class TopBar extends React.Component<navProps, {}> {
 	private headerStyle = {
-		height: "42px",
+		// height: "42px",
 		background: "#E3E3E3",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center"
+		// display: "flex",
+		// alignItems: "center",
+		// justifyContent: "center",
+		padding: '15px 12px'
+
 	};
+
+	private renderTitle ():string {
+		const currentRoute = this.props.currentRoute
+		const search = this.props.search && Qs.parse(this.props.search)
+		const title = (currentRoute &&  currentRoute.title) ? currentRoute.title : search.title
+		return title
+	}
+
+	private renderBack ():object | void {
+		const currentRoute = this.props.currentRoute
+		if(currentRoute && currentRoute.back) {
+			return <span onClick={() => {this.props.history.goBack()}} style={{float: 'left', fontSize: '18px'}} className="iconfont icon-Back" />
+		}
+	}
+
 	public render() {
 		return (
 			<header style={this.headerStyle}>
+				{this.renderBack()}
 				<h1
 					style={{
-						fontSize: "18px"
+						fontSize: "18px",
+						textAlign: 'center'
 					}}
 				>
-					{this.props.currentRoute && this.props.currentRoute.title}
+					{this.renderTitle()}
 				</h1>
 			</header>
 		);

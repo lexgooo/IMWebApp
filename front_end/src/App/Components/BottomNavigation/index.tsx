@@ -10,9 +10,10 @@ interface navPorps {
     currentRoute?: {
         path: string
         component: any
-        title: string
+        title?: string
         name?: string
         back?: boolean
+        navigation?: boolean
     }
 }
 export default class BottomNavigation extends React.Component<navPorps, {}> {

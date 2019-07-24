@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { Link } from 'react-router-dom'
+import Qs from 'qs'
 import moment from 'moment'
 import avatarAlt from '../../../images/alt.png'
 import Item from './Item'
@@ -18,36 +20,36 @@ interface itemProps {
 }
 
 export default class ListItem extends React.Component<itemProps, {}> {
-    private normalGap:number = 12
-    private avatarSize:number = 45
+    private normalGap: number = 12
+    private avatarSize: number = 45
     private avatarStyle(): {} {
         let avatar: string = this.props.item.avatar
             ? this.props.item.avatar
-			: avatarAlt
+            : avatarAlt
         return {
-			background: `url(${avatar})`,
-			backgroundSize: '100%',
-			width: `${this.avatarSize}px`,
-			height: `${this.avatarSize}px`,
-			overflow: 'hidden',
-			borderRadius: `${this.avatarSize / 2}px`,
-			marginRight: `${this.normalGap}px`
-		}
+            background: `url(${avatar})`,
+            backgroundSize: '100%',
+            width: `${this.avatarSize}px`,
+            height: `${this.avatarSize}px`,
+            overflow: 'hidden',
+            borderRadius: `${this.avatarSize / 2}px`,
+            marginRight: `${this.normalGap}px`
+        }
     }
-    private mainStyle:{} = {
+    private mainStyle: {} = {
         display: 'flex',
         flex: '1',
         flexDirection: 'column',
         justifyContent: 'space-between'
     }
-    private betweenStyle:{} = {
+    private betweenStyle: {} = {
         display: 'flex',
         justifyContent: 'space-between',
         fontSize: '12px',
         fontWeight: '100',
         color: '#999999'
     }
-    private badageStyle:{} = {
+    private badageStyle: {} = {
         background: '#F95250',
         color: '#fff',
         height: '20px',
@@ -59,26 +61,46 @@ export default class ListItem extends React.Component<itemProps, {}> {
         justifyContent: 'center',
         borderRadius: '10px'
     }
-    private badage(unread:number):any {
+    private badage(unread: number): any {
         if (unread > 0) {
-            return <span style={this.badageStyle}>{unread <= 99 ? unread : '99+'}</span>
+            return (
+                <span style={this.badageStyle}>
+                    {unread <= 99 ? unread : '99+'}
+                </span>
+            )
         }
     }
     public render() {
         return (
-            <Item leftGap={this.avatarSize + this.normalGap*2} index={this.props.index} normalGap={this.normalGap}>
-                <div style={this.avatarStyle()} />
-                <div style={this.mainStyle}>
-                    <div style={this.betweenStyle}>
-                        <span style={{fontSize: '18px', fontWeight: 'normal', color: '#000'}}>{this.props.item.userName}</span>
-                        <span>{moment(this.props.item.time).fromNow()}</span>
+            <Link to={{pathname: 'chatwindow', search: `?${Qs.stringify({id: this.props.item.id, title: this.props.item.userName})}`}} style={{textDecoration: 'none'}}>
+                <Item
+                    leftGap={this.avatarSize + this.normalGap * 2}
+                    index={this.props.index}
+                    normalGap={this.normalGap}
+                >
+                    <div style={this.avatarStyle()} />
+                    <div style={this.mainStyle}>
+                        <div style={this.betweenStyle}>
+                            <span
+                                style={{
+                                    fontSize: '18px',
+                                    fontWeight: 'normal',
+                                    color: '#000'
+                                }}
+                            >
+                                {this.props.item.userName}
+                            </span>
+                            <span>
+                                {moment(this.props.item.time).fromNow()}
+                            </span>
+                        </div>
+                        <div style={this.betweenStyle}>
+                            <span>{this.props.item.lastMsg}</span>
+                            {this.badage(this.props.item.unread)}
+                        </div>
                     </div>
-                    <div style={this.betweenStyle}>
-                        <span>{this.props.item.lastMsg}</span>
-                        {this.badage(this.props.item.unread)}
-                    </div>
-                </div>
-            </Item>
+                </Item>
+            </Link>
         )
     }
 }
