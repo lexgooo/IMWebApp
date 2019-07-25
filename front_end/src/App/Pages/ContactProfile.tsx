@@ -3,7 +3,8 @@ import ProfileCard from '../Components/ProfileCard'
 import Button from '../Components/Button'
 
 export interface contactProps {
-    history:any
+    history:any,
+    location:any
 }
 
 export default class ContactProfile extends Component<contactProps, {}> {
@@ -19,7 +20,7 @@ export default class ContactProfile extends Component<contactProps, {}> {
         return (
             <main>
                 <ProfileCard name={this.state.info.name} gender={this.state.info.gender} id={this.state.info.id} />
-                <Button color="#03C160" onClick={() => this.props.history.push('/chatwindow')} style={{marginTop: '40px'}}>发送消息</Button>
+                <Button color="#03C160" onClick={() => this.props.history.push({pathname: 'chatwindow', search: this.props.location.search})} style={{marginTop: '40px'}}>发送消息</Button>
             </main>
         )
     }

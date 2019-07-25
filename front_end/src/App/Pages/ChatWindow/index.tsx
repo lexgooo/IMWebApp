@@ -1,11 +1,19 @@
 import React, {Component} from 'react'
+import MsgHistoryList from './MsgHistoryList'
+import InputComponents from './InputComponents'
 
 export default class ChatWindow extends Component<{}, {}> {
-    render() {
+    private windowStyle:object = {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+    }
+    public render() {
         return (
-            <main>
-                聊天窗口界面
-            </main>
+            <section style={this.windowStyle}>
+                <MsgHistoryList />
+                <InputComponents />
+            </section>
         )
     }
 }
