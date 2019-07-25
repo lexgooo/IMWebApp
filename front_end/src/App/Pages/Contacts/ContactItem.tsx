@@ -30,7 +30,7 @@ export default class ContactItem extends React.Component<contactProps, {}> {
     }
     public render() {
         return (
-            <Link style={this.linkStyle} to={{pathname: 'contactprofile', search: `?${Qs.stringify({id: this.props.id, title: this.props.name})}`}}>
+            <Link style={this.linkStyle} to={{pathname: 'contactprofile', search: `?${Qs.stringify({id: this.props.id, name: this.props.name})}`}}>
                 <ItemStyleComp
                     leftGap={this.props.normalGap * 2 + this.avatarSize}
                     normalGap={this.props.normalGap}

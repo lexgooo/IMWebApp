@@ -24,7 +24,7 @@ export default class TopBar extends React.Component<navProps, {}> {
 	private renderTitle ():string {
 		const currentRoute = this.props.currentRoute
 		const search = this.props.search && Qs.parse(this.props.search)
-		const title = (currentRoute &&  currentRoute.title) ? currentRoute.title : search.title
+		const title = (currentRoute &&  currentRoute.title) ? currentRoute.title : search.name
 		return title
 	}
 

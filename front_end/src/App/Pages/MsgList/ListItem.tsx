@@ -72,7 +72,7 @@ export default class ListItem extends React.Component<itemProps, {}> {
     }
     public render() {
         return (
-            <Link to={{pathname: 'chatwindow', search: `?${Qs.stringify({id: this.props.item.id, title: this.props.item.userName})}`}} style={{textDecoration: 'none'}}>
+            <Link to={{pathname: 'chatwindow', search: `?${Qs.stringify({id: this.props.item.id, name: this.props.item.userName})}`}} style={{textDecoration: 'none'}}>
                 <Item
                     leftGap={this.avatarSize + this.normalGap * 2}
                     index={this.props.index}

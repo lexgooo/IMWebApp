@@ -1,9 +1,26 @@
 import React, {Component} from 'react'
+import ProfileCard from '../Components/ProfileCard'
+import Button from '../Components/Button'
 
-export default class ContactProfile extends Component<{}, {}> {
-    render() {
+export interface contactProps {
+    history:any
+}
+
+export default class ContactProfile extends Component<contactProps, {}> {
+    public state = {
+        info: {
+            name: '根据id去查',
+            gender: '女',
+            id: 'gwx0000002'
+        }
+    }
+
+    public render():object {
         return (
-            <div>联系人个人信息</div>
+            <main>
+                <ProfileCard name={this.state.info.name} gender={this.state.info.gender} id={this.state.info.id} />
+                <Button color="#03C160" onClick={() => this.props.history.push('/chatwindow')} style={{marginTop: '40px'}}>发送消息</Button>
+            </main>
         )
     }
 }

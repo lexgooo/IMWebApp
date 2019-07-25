@@ -10,7 +10,7 @@ export default class Profile extends React.Component<{}, {}> {
             id: 'gwx0001'
         }
     }
-    render() {
+    public render():object {
         return (
             <main>
                 <ProfileCard name={this.state.info.name} gender={this.state.info.gender} id={this.state.info.id} />
