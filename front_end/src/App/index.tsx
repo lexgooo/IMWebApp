@@ -6,17 +6,24 @@ export default class App extends React.Component<{}, {}> {
     public render() {
         return (
             <Router>
-                {routes.map((route, i) => {
-                    return (
-                        <Route
-                            path={route.path}
-                            render={props => {
-                                return route.routes ? <route.component {...props} routes={route.routes} /> : <route.component {...props} />
-                            }}
-                            key={i}
-                        />
-                    )
-                })}
+                <div style={{height: '100vh'}}>
+                    {routes.map((route, i) => {
+                        return (
+                            <Route
+                                path={route.path}
+                                render={props => {
+                                    return (
+                                        <route.component
+                                            {...props}
+                                            routes={route.routes}
+                                        />
+                                    )
+                                }}
+                                key={i}
+                            />
+                        )
+                    })}
+                </div>
                 <Redirect from='/' to='/msglist' />
             </Router>
         )

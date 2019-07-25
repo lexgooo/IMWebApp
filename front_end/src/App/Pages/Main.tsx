@@ -13,14 +13,19 @@ export interface mainProps {
         navigation?: boolean
     }[]
     location: any,
-    history: {}
+    history: {},
+    match: any
 }
 
 export default class Main extends Component<mainProps, {}> {
-    private mainStyle: {} = {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh'
+    private mainStyle(): {} {
+        return this.props.location.pathname !== '/login' ? {
+            display: 'flex',
+            flexDirection: 'column',
+            height:  '100%'
+        } : {
+            display: 'none'
+        }
     }
     private pageStyle: {} = {
         flex: '1',
@@ -63,7 +68,7 @@ export default class Main extends Component<mainProps, {}> {
     public render() {
         const routes = this.props.routes
         return (
-            <div style={this.mainStyle}>
+            <div style={this.mainStyle()}>
                 <TopBar currentRoute={this.currentRoute()} search={this.props.location.search} history={this.props.history} />
                 <div style={this.pageStyle}>
                     {routes && routes.map((item, i) => {

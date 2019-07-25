@@ -6,7 +6,7 @@ import Login from './Pages/Login/index'
 import ContactProfile from './Pages/ContactProfile'
 import ChatWindow from './Pages/ChatWindow/index'
 
-export default [
+const router:any[] = [
     {
         path: '/',
         component: Main,
@@ -51,3 +51,5 @@ export default [
         component: Login
     }
 ]
+
+export default router
