@@ -1,4 +1,6 @@
 import MsgElemClass from './msg-elem';
+import { nextSeq, createRandom, unixtime, calcUniqId } from './methods';
+import { SESSION_TYPE, MSG_ELEMENT_TYPE } from './store';
 export default class MsgClass {
     public sess:any;
     public subType:any;

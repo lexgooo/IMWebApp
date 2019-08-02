@@ -1,6 +1,7 @@
 import SparkMD5 from './spark-md5'
 
 export default class FileUploaderClass {
+    private tool: any
     public fileMd5: any
     public submitUploadFileForm: any
     public uploadFile: any
@@ -9,23 +10,22 @@ export default class FileUploaderClass {
         //FileReader pc浏览器兼容性
         //Feature   Firefox (Gecko) Chrome  Internet Explorer   Opera   Safari
         //Basic support 3.6 7   10                      12.02   6.0.2
-        let fileReader = null
+        let fileReader: any = null
         try {
             fileReader = new FileReader() //分块读取文件对象
         } catch (e) {
             if (cbErr) {
-                cbErr(tool.getReturnError('当前浏览器不支持FileReader', -18))
+                cbErr(
+                    this.tool.getReturnError('当前浏览器不支持FileReader', -18)
+                )
                 return
             }
         }
-        //file的slice方法，注意它的兼容性，在不同浏览器的写法不同
-        let blobSlice =
-            File.prototype.mozSlice ||
-            File.prototype.webkitSlice ||
-            File.prototype.slice
+        //file的slice方法
+        let blobSlice = File.prototype.slice
         if (!blobSlice) {
             if (cbErr) {
-                cbErr(tool.getReturnError('当前浏览器不支持FileAPI', -19))
+                cbErr(this.tool.getReturnError('当前浏览器不支持FileAPI', -19))
                 return
             }
         }
@@ -35,7 +35,7 @@ export default class FileUploaderClass {
         let currentChunk = 0 //当前块数
         let spark = new SparkMD5() //获取MD5对象
 
-        fileReader.onload = function(e) {
+        fileReader.onload = function(e: any) {
             //数据加载完毕事件
 
             let binaryStr = ''
@@ -73,7 +73,26 @@ export default class FileUploaderClass {
         loadNext() //开始读取
     }
 
-    constructor() {
+    constructor(
+        tool: any,
+        uploadResultIframeId: any,
+        isAccessFormalEnv: any,
+        ctx: any,
+        VERSION_INFO: any,
+        nextSeq:any,
+        unixtime:any,
+        createRandom:any,
+        UPLOAD_RES_PKG_FLAG:any,
+        authkey:any,
+        ACTION_STATUS:any,
+        UPLOAD_RES_TYPE:any,
+        getFileDownUrl:any,
+        Upload_Retry_Times:any,
+        Upload_Retry_Max_Times:any,
+        proto_uploadPic:any,
+        log:any
+    ) {
+        this.tool = tool
         this.fileMd5 = null
         //提交上传图片表单(用于低版本IE9以下)
         this.submitUploadFileForm = (options: any, cbOk: any, cbErr: any) => {
@@ -107,7 +126,7 @@ export default class FileUploaderClass {
             //fileObj.type="file";//ie8下不起作用，必须由业务自己设置
             fileObj.name = 'file'
 
-            let iframe = document.createElement('iframe')
+            let iframe:any = document.createElement('iframe')
             iframe.name = iframeName
             iframe.id = iframeName
             iframe.style.display = 'none'
@@ -136,7 +155,7 @@ export default class FileUploaderClass {
             //form.enctype='multipart/form-data';//ie8下不起作用，必须由业务自己设置
             form.target = iframeName
 
-            function createFormInput(name:any, value:any) {
+            function createFormInput(name: any, value: any) {
                 let tempInput = document.createElement('input')
                 tempInput.type = 'hidden'
                 tempInput.name = name
@@ -175,7 +194,7 @@ export default class FileUploaderClass {
                     iframe.parentNode.removeChild(iframe)
                     iframe = null
 
-                    if (resp.ActionStatus == ACTION_STATUS.OK) {
+                    if (resp.ActionStatus === ACTION_STATUS.OK) {
                         cbOk && cbOk(resp)
                     } else {
                         cbErr && cbErr(resp)
@@ -194,7 +213,7 @@ export default class FileUploaderClass {
             let file_upload = {
                 //初始化
                 init: function(options: any, cbOk: any, cbErr: any) {
-                    let me = this
+                    let me:any = this
                     me.file = options.file
                     //分片上传进度回调事件
                     me.onProgressCallBack = options.onProgressCallBack
@@ -220,10 +239,7 @@ export default class FileUploaderClass {
                     me.cbErr = cbErr //上传失败回调事件
 
                     me.reader = new FileReader() //读取文件对象
-                    me.blobSlice =
-                        File.prototype.mozSlice ||
-                        File.prototype.webkitSlice ||
-                        File.prototype.slice //file的slice方法,不同浏览器不一样
+                    me.blobSlice = File.prototype.slice //file的slice方法,不同浏览器不一样
 
                     me.reader.onloadstart = me.onLoadStart //开始读取回调事件
                     me.reader.onprogress = me.onProgress //读取文件进度回调事件
@@ -241,7 +257,7 @@ export default class FileUploaderClass {
                 onLoadStart: function() {
                     let me = file_upload
                 },
-                onProgress: function(e) {
+                onProgress: function(e:any) {
                     let me: any = file_upload
                     me.loaded += e.loaded
                     if (me.onProgressCallBack) {
@@ -254,13 +270,13 @@ export default class FileUploaderClass {
                 onError: function() {
                     let me = file_upload
                 },
-                onLoad: function(e) {
+                onLoad: function(e:any) {
                     let me: any = file_upload
-                    if (e.target.readyState == FileReader.DONE) {
+                    if (e.target.readyState === FileReader.DONE) {
                         let slice_data_base64 = e.target.result
                         //注意，一定要去除base64编码头部
                         let pos = slice_data_base64.indexOf(',')
-                        if (pos != -1) {
+                        if (pos !== -1) {
                             slice_data_base64 = slice_data_base64.substr(
                                 pos + 1
                             )
@@ -284,7 +300,7 @@ export default class FileUploaderClass {
 
                         //上传成功的成功回调
                         let succCallback = function(resp: any) {
-                            if (resp.IsFinish == 0) {
+                            if (resp.IsFinish === 0) {
                                 me.loaded = resp.Next_Offset
                                 if (me.loaded < me.total) {
                                     me.readBlob(me.loaded)
@@ -302,7 +318,7 @@ export default class FileUploaderClass {
                                         URL_INFO: resp.URL_INFO,
                                         Download_Flag: resp.Download_Flag
                                     }
-                                    if (me.fileType == UPLOAD_RES_TYPE.FILE) {
+                                    if (me.fileType === UPLOAD_RES_TYPE.FILE) {
                                         //如果上传的是文件，下载地址需要sdk内部拼接
                                         tempResp.URL_INFO = getFileDownUrl(
                                             resp.File_UUID,
@@ -339,7 +355,7 @@ export default class FileUploaderClass {
                     let me = file_upload
                 },
                 //分片读取文件方法
-                readBlob: function(start) {
+                readBlob: function(start:any) {
                     let me: any = file_upload
                     let blob,
                         file = me.file
@@ -367,7 +383,7 @@ export default class FileUploaderClass {
             //读取文件MD5
             this.getFileMD5(
                 options.file,
-                function(fileMd5) {
+                function(fileMd5:any) {
                     log.info('fileMd5: ' + fileMd5)
                     options.fileMd5 = fileMd5
                     //初始化上传参数

@@ -333,7 +333,7 @@ export default class SparkMD5 {
      *
      * @return {String|Array} The result
      */
-    public end (raw:any) {
+    public end (raw:any = undefined) {
         var buff = this._buff,
             length = buff.length,
             i,

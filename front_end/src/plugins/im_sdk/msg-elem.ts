@@ -1,3 +1,5 @@
+import {tool, emotionDataIndexs, emotions, IMAGE_FORMAT, IMAGE_TYPE, SESSION_TYPE, UPLOAD_RES_TYPE, BROWSER_INFO, GROUP_TIP_MAX_USER_COUNT, GROUP_TIP_TYPE, GROUP_TIP_MODIFY_GROUP_INFO_TYPE, log} from './store'
+import { getFileDownUrlV2, getSoundDownUrl, getFileDownUrl } from './methods';
 export default class MsgElemClass {
     // class Msg.Elem
     public content:any;
@@ -270,10 +272,10 @@ class FileClass {
         this.receiverId = receiverId; //接收方id
         this.downFlag = downFlag; //下载标志位
 
-        this.busiId = chatType == SESSION_TYPE.C2C ? 2 : 1; //busi_id ( 1：群    2:C2C)
+        this.busiId = chatType === SESSION_TYPE.C2C ? 2 : 1; //busi_id ( 1：群    2:C2C)
         //根据不同情况拉取数据
         //是否需要申请下载地址  0:到架平申请  1:到cos申请  2:不需要申请, 直接拿url下载
-        if (downFlag == 2 && url != null) {
+        if (downFlag === 2 && url != null) {
             this.downUrl = url;
         } else {
             if (downFlag !== undefined && this.busiId !== undefined) {
@@ -398,7 +400,7 @@ class GroupTipClass {
                 text += this.opUserId + "将";
                 for (let m in this.userIdList) {
                     text += this.userIdList[m] + ",";
-                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' == maxIndex+'') {
+                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' === maxIndex+'') {
                         text += "等" + this.userIdList.length + "人";
                         break;
                     }
@@ -409,7 +411,7 @@ class GroupTipClass {
                 text += this.opUserId + "将";
                 for (let m in this.userIdList) {
                     text += this.userIdList[m] + ",";
-                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' == maxIndex+'') {
+                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' === maxIndex+'') {
                         text += "等" + this.userIdList.length + "人";
                         break;
                     }
@@ -420,7 +422,7 @@ class GroupTipClass {
                 text += this.opUserId + "取消";
                 for (let m in this.userIdList) {
                     text += this.userIdList[m] + ",";
-                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' == maxIndex+'') {
+                    if (this.userIdList.length > GROUP_TIP_MAX_USER_COUNT && m+'' === maxIndex+'') {
                         text += "等" + this.userIdList.length + "人";
                         break;
                     }
@@ -464,7 +466,7 @@ class GroupTipClass {
                     let shutupTime = this.memberInfoList[m].getShutupTime();
                     text += userId + ": ";
                     if (shutupTime != null && shutupTime !== undefined) {
-                        if (shutupTime == 0) {
+                        if (shutupTime === 0) {
                             text += "取消禁言; ";
                         } else {
                             text += "禁言" + shutupTime + "秒; ";
@@ -472,7 +474,7 @@ class GroupTipClass {
                     } else {
                         text += " shutupTime为空";
                     }
-                    if (this.memberInfoList.length > GROUP_TIP_MAX_USER_COUNT && m+'' == maxIndex+'') {
+                    if (this.memberInfoList.length > GROUP_TIP_MAX_USER_COUNT && m+'' === maxIndex+'') {
                         text += "等" + this.memberInfoList.length + "人";
                         break;
                     }
@@ -481,7 +483,7 @@ class GroupTipClass {
 
             case GROUP_TIP_TYPE.READED: //消息已读
                 /**/
-                webim.Log.info("消息已读同步")
+                log.info("消息已读同步")
                 break;
             default:
                 text += "未知群提示消息类型：type=" + this.opType;
