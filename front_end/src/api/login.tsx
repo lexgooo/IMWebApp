@@ -1,3 +1,4 @@
+import webim from '../plugins/im_sdk'
 const Cookies = require('js-cookie')
 
 let imLoginfo: { sdkAppID: string; identifier?: string; userSig?: string } = {
@@ -9,7 +10,9 @@ export interface loginParams {
 }
 export function login(params: loginParams): any {
     return new Promise((resolve, reject) => {
-        const datas: {} = require('./datas.json')
+        let datas: {
+            userList: any[]
+        } = require('./datas.json')
         const userList: { UserID: string; UserSig: string }[] = datas.userList
         let accountInfo: {
             UserID?: string
@@ -41,8 +44,13 @@ function loginIM(params: { UserID?: string; UserSig?: string }) {
             isAccessFormalEnv: false,
             isLogOn: true
         }
+        webim.login(loginInfo, listeners, options, (res:any) => {
+            debugger
+            resolve()
+        }, (err:any) => [
+            reject(err)
+        ])
     })
-    // TODO 从这里开始
 }
 
 function onMsgNotify(resp: any): any {

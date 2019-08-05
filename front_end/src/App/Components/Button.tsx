@@ -7,7 +7,7 @@ export interface btnProps {
     color?:string
 }
 
-export default styledTs<btnProps>(styled.div) `
+export default styledTs<btnProps>(styled.button) `
     font-size: ${props => props.fontSize ? props.fontSize : '18px'};
     background: ${props => props.background ? props.background : '#fff'};
     color: ${props => props.color ? props.color : '#262626'};

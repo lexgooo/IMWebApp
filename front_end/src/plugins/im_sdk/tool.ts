@@ -327,7 +327,7 @@ export default class Tool {
             const mise = ua.match(/msie ([\d.]+)/)
             const firefox = ua.match(/firefox\/([\d.]+)/)
             const chrome = ua.match(/chrome\/([\d.]+)/)
-            const opera = ua.ua.match(/opera.([\d.]+)/)
+            const opera = ua.match(/opera.([\d.]+)/)
             const safari = ua.match(/version\/([\d.]+).*safari/)
             if (mise) {
                 s = mise

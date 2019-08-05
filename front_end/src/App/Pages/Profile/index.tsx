@@ -12,11 +12,14 @@ export default class Profile extends React.Component<profileProps, {}> {
             id: 'gwx0001'
         }
     }
+    private handleExit() {
+        this.props.history.replace('/login')
+    }
     public render():object {
         return (
             <main>
                 <ProfileCard name={this.state.info.name} gender={this.state.info.gender} id={this.state.info.id} />
-                <Button style={{marginTop: '40px'}} onClick={() => this.props.history.replace('/login')}>退出登录</Button>
+                <Button style={{marginTop: '40px'}} onClick={this.handleExit}>退出登录</Button>
             </main>
         )
     }

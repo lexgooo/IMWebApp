@@ -3,12 +3,12 @@ import {login} from '../../../api/login'
 import Button from '../../Components/Button'
 
 export default class Login extends Component<{}, {}> {
-    public state: any = {
+    state: any = {
         userId: '',
         password: ''
     }
 
-    private titleStyle = {
+    titleStyle = {
         fontSize: '26px',
         marginTop: '113px',
         marginBottom: '81px',
@@ -16,7 +16,7 @@ export default class Login extends Component<{}, {}> {
         lineHeight: '37px'
     }
 
-    private inputStyle(borderBottom?: boolean): {} {
+    inputStyle(borderBottom?: boolean): {} {
         return {
             fontSize: '14px',
             padding: '12px 20px',
@@ -26,12 +26,23 @@ export default class Login extends Component<{}, {}> {
         }
     }
 
-    private login(): any {
-        const params = {
-            userId: this.state.userId,
-            password: this.state.password
-        }
-        login(params)
+    handleChange (e:any): void {
+        debugger
+        this.setState({
+            [e.tartget.name]: e.target.value
+        })
+    }
+
+    private handleSubmit(): any {
+        this.setState({
+            userId: '123',
+            password: '456'
+        })
+        // const params = {
+        //     userId: this.state.userId,
+        //     password: this.state.password
+        // }
+        // login(params)
     }
 
     public render() {
@@ -47,17 +58,21 @@ export default class Login extends Component<{}, {}> {
                     <input
                         style={this.inputStyle()}
                         type='text'
+                        name="userId"
+                        onChange={this.handleChange}
                         value={this.state.userId}
                         placeholder='请输入登录用户ID'
                     />
                     <input
                         style={this.inputStyle(true)}
                         type='password'
+                        name="password"
+                        onChange={this.handleChange}
                         value={this.state.password}
                         placeholder='请输入登录密码'
                     />
                     <Button
-                        onClick={this.login()}
+                        onClick={this.handleSubmit()}
                         style={{
                             marginTop: '65px'
                         }}
