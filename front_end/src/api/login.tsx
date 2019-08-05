@@ -9,7 +9,9 @@ export interface loginParams {
     password: string
 }
 export function login(params: loginParams): any {
+    debugger
     return new Promise((resolve, reject) => {
+        debugger
         let datas: {
             userList: any[]
         } = require('./datas.json')
@@ -25,15 +27,19 @@ export function login(params: loginParams): any {
                 accountInfo = item
             }
         })
+        debugger
         if (accountInfo.UserID) {
+            debugger
             loginIM(accountInfo)
         } else {
+            debugger
             reject('找不到用户')
         }
     })
 }
 
 function loginIM(params: { UserID?: string; UserSig?: string }) {
+    debugger
     return new Promise((resolve, reject) => {
         const loginInfo = Object.assign(imLoginfo, {
             identifier: params.UserID,

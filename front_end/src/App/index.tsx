@@ -24,7 +24,7 @@ export default class App extends React.Component<{}, {}> {
                         )
                     })}
                 </div>
-                <Redirect from='/' to='/msglist' />
+                {/* <Redirect from='/' to='/msglist' /> */}
             </Router>
         )
     }

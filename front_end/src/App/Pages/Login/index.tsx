@@ -10,7 +10,6 @@ export default class Login extends Component<{}, {}> {
 
     titleStyle = {
         fontSize: '26px',
-        marginTop: '113px',
         marginBottom: '81px',
         marginLeft: '20px',
         lineHeight: '37px'
@@ -26,28 +25,30 @@ export default class Login extends Component<{}, {}> {
         }
     }
 
-    handleChange (e:any): void {
-        debugger
+    handleChange = (e:any): void => {
         this.setState({
-            [e.tartget.name]: e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
     private handleSubmit(): any {
-        this.setState({
-            userId: '123',
-            password: '456'
+        const params = {
+            userId: this.state.userId,
+            password: this.state.password
+        }
+        debugger
+        login(params).then((res:any) => {
+            debugger
+            console.log(res)
+        }).catch((err:any) => {
+            console.log(err)
         })
-        // const params = {
-        //     userId: this.state.userId,
-        //     password: this.state.password
-        // }
-        // login(params)
+        return
     }
 
     public render() {
         return (
-            <main>
+            <main style={{paddingTop: '113px'}}>
                 <h1 style={this.titleStyle}>用户登录</h1>
                 <form
                     style={{
@@ -72,7 +73,7 @@ export default class Login extends Component<{}, {}> {
                         placeholder='请输入登录密码'
                     />
                     <Button
-                        onClick={this.handleSubmit()}
+                        onClick={() => this.handleSubmit()}
                         style={{
                             marginTop: '65px'
                         }}
