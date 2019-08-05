@@ -1,3 +1,5 @@
+import { store } from "./store";
+
 export default class Tool {
     //格式化时间戳
     //format格式如下：
@@ -30,8 +32,8 @@ export default class Tool {
     public ACTION_STATUS: any
     public log: any
 
-    constructor(xssFilterEnable: any, ACTION_STATUS: any, log: any) {
-        this.xssFilterEnable = xssFilterEnable
+    constructor(ACTION_STATUS: any, log: any) {
+        this.xssFilterEnable = store.xssFilterEnable
         this.ACTION_STATUS = ACTION_STATUS
         this.log = log
         this.formatTimeStamp = (timestamp: any, format: any) => {

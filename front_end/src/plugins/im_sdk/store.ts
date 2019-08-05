@@ -31,6 +31,51 @@ import MsgManagerClass from './msg-manager'
 import FileUploaderClass from './file-uploader'
 import { HConnManager, LConnManager } from './conn-manager'
 
+// 可更改变量
+export const store: any = {
+    //当前长轮询返回错误次数
+    curLongPollingRetErrorCount: 0,
+    //当前大群长轮询返回错误次数
+    curBigGroupLongPollingRetErrorCount: 0,
+    onLongPullingNotify: null,
+    //是否启用正式环境，默认启用
+    isAccessFormaEnvironment: true,
+    authkey: null, //文件下载票据
+    ipList: [], //文件下载地址
+    onAppliedDownloadUrl: null,
+    //当前登录用户
+    ctx: {
+        sdkAppID: null,
+        appIDAt3rd: null,
+        accountType: null,
+        identifier: null,
+        tinyid: null,
+        identifierNick: null,
+        userSig: null,
+        a2: null,
+        contentType: 'json',
+        apn: 1
+    },
+    opt: {},
+    //ie7/8/9采用jsonp方法解决ajax跨域限制
+    jsonpRequestId: 0, //jsonp请求id
+    //最新jsonp请求返回的json数据
+    jsonpLastRspData: null,
+    apiReportItems: [], //暂存api接口质量上报数据
+    LongPollingId: null,
+    // 是否需要进行XSS Filter
+    xssFilterEnable: true,
+    //浏览器版本信息
+    BROWSER_INFO: {},
+    //是否为ie9（含）以下
+    lowerBR: false,
+    //长轮询默认超时时间，单位：毫秒
+    longPollingDefaultTimeOut: 60000,
+    tempC2CMsgList: [], //新c2c消息临时缓存
+    tempC2CHistoryMsgList: [], //漫游c2c消息临时缓存
+    expireTime: null, //文件下载票据超时时间
+}
+
 export const Version = '1.7.3'
 export let msgCache = {}
 
@@ -39,11 +84,6 @@ export const SDK = {
     APPID: '537048168', //web im sdk 版本 APPID
     PLAATFORM: '10' // 发送请求时判断其是来自web端的请求
 }
-
-//是否启用正式环境，默认启用
-export let isAccessFormaEnvironment = true
-// 是否需要进行XSS Filter
-export let xssFilterEnable = true
 
 //后台接口主机
 export const SRV_HOST = {
@@ -56,11 +96,6 @@ export const SRV_HOST = {
         PIC: 'https://pic.tim.qq.com'
     }
 }
-
-//浏览器版本信息
-export let BROWSER_INFO: any = {}
-//是否为ie9（含）以下
-export let lowerBR = false
 
 //服务名称
 export const SRV_NAME = {
@@ -147,7 +182,7 @@ export const IMAGE_TYPE = {
     SMALL: 3 //缩略小图
 }
 //图片格式
-export const IMAGE_FORMAT:any = {
+export const IMAGE_FORMAT: any = {
     JPG: 0x1,
     JPEG: 0x1,
     GIF: 0x2,
@@ -329,12 +364,6 @@ export let curLongPollingStatus = CONNECTION_STATUS.INIT
 //当长轮询连接断开后，是否已经回调过
 export let longPollingOffCallbackFlag = false
 
-//当前长轮询返回错误次数
-export let curLongPollingRetErrorCount = 0
-
-//长轮询默认超时时间，单位：毫秒
-export let longPollingDefaultTimeOut = 60000
-
 //长轮询返回错误次数达到一定值后，发起新的长轮询请求间隔时间，单位：毫秒
 export let longPollingIntervalTime = 5000
 
@@ -346,11 +375,6 @@ export let longPollingKickedErrorCode = 91101
 
 export let longPollingPackageTooLargeErrorCode = 10018
 
-export let LongPollingId: any = null
-
-//当前大群长轮询返回错误次数
-export let curBigGroupLongPollingRetErrorCount = 0
-
 //最大允许长轮询返回错误次数
 export const LONG_POLLING_MAX_RET_ERROR_COUNT = 10
 
@@ -359,50 +383,22 @@ export let Upload_Retry_Times = 0
 //最大上传重试
 export let Upload_Retry_Max_Times = 20
 
-//ie7/8/9采用jsonp方法解决ajax跨域限制
-export let jsonpRequestId = 0 //jsonp请求id
-//最新jsonp请求返回的json数据
-export let jsonpLastRspData: any = null
 //兼容ie7/8/9,jsonp回调函数
 export let jsonpCallback: any = null
 
 export let uploadResultIframeId = 0 //用于上传图片的iframe id
 
-export let ipList: any = [] //文件下载地址
-export let authkey: any = null //文件下载票据
-export let expireTime = null //文件下载票据超时时间
-
 //错误码
 export let ERROR = {}
-//当前登录用户
-export let ctx: any = {
-    sdkAppID: null,
-    appIDAt3rd: null,
-    accountType: null,
-    identifier: null,
-    tinyid: null,
-    identifierNick: null,
-    userSig: null,
-    a2: null,
-    contentType: 'json',
-    apn: 1
-}
-export let opt: any = {}
-export let tempC2CMsgList: any = [] //新c2c消息临时缓存
-export let tempC2CHistoryMsgList: any = [] //漫游c2c消息临时缓存
 
 export let maxApiReportItemCount = 20 //一次最多上报条数
-export let apiReportItems: any = [] //暂存api接口质量上报数据
-export let onLongPullingNotify: any = null
 
 export let Resources: any = {
     downloadMap: {}
 }
 
-export let onAppliedDownloadUrl: any = null
-
 //表情标识字符和索引映射关系对象，用户可以自定义
-export const emotionDataIndexs:any = {
+export const emotionDataIndexs: any = {
     '[惊讶]': 0,
     '[撇嘴]': 1,
     '[色]': 2,
@@ -441,13 +437,13 @@ export const emotionDataIndexs:any = {
 }
 
 //表情对象，用户可以自定义
-export let emotions:any = {}
+export let emotions: any = {}
 
 //日志对象
 export const log = new Log(true)
 
 //工具类
-export const tool = new Tool(xssFilterEnable, ACTION_STATUS, log)
+export const tool = new Tool(ACTION_STATUS, log)
 
 // class Session
 export let Session: any = SessionClass
@@ -471,13 +467,11 @@ export let FileUploader = new FileUploaderClass(
     tool,
     uploadResultIframeId,
     isAccessFormalEnv,
-    ctx,
     VERSION_INFO,
     nextSeq,
     unixtime,
     createRandom,
     UPLOAD_RES_PKG_FLAG,
-    authkey,
     ACTION_STATUS,
     UPLOAD_RES_TYPE,
     getFileDownUrl,
@@ -489,7 +483,7 @@ export let FileUploader = new FileUploaderClass(
 
 // singleton object ConnManager
 export let ConnManager =
-    lowerBR === false
+    store.lowerBR === false
         ? new HConnManager(
               null,
               getApiUrl,
@@ -502,9 +496,7 @@ export let ConnManager =
         : new LConnManager(
               null,
               getApiUrl,
-              jsonpRequestId,
               jsonpCallback,
-              jsonpLastRspData,
               ACTION_STATUS,
               longPollingTimeOutErrorCode,
               log
@@ -512,11 +504,6 @@ export let ConnManager =
 
 // singleton object MsgManager
 export let MsgManager = new MsgManagerClass(
-    ipList,
-    authkey,
-    expireTime,
-    longPollingDefaultTimeOut,
-    LongPollingId,
     proto_getLongPollingId,
     proto_longPolling,
     LONG_POLLINNG_EVENT_TYPE,
@@ -524,7 +511,6 @@ export let MsgManager = new MsgManagerClass(
     ACTION_STATUS,
     proto_bigGroupLongPolling,
     tool,
-    curBigGroupLongPollingRetErrorCount,
     CONNECTION_STATUS,
     ConnManager,
     longPollingPackageTooLargeErrorCode,
@@ -532,7 +518,6 @@ export let MsgManager = new MsgManagerClass(
     longPollingKickedErrorCode,
     proto_getMsgs,
     MsgStore,
-    ctx,
     SESSION_TYPE,
     Session,
     Msg,
@@ -541,8 +526,6 @@ export let MsgManager = new MsgManagerClass(
     FRIEND_WRITE_MSG_ACTION,
     proto_getC2CHistoryMsgs,
     proto_getGroupMsgs,
-    onLongPullingNotify,
-    onAppliedDownloadUrl,
     proto_sendMsg,
     FRIEND_NOTICE_TYPE,
     PROFILE_NOTICE_TYPE,
@@ -551,7 +534,6 @@ export let MsgManager = new MsgManagerClass(
     proto_logout,
     proto_getIpAndAuthkey,
     proto_getJoinedGroupListHigh,
-    curLongPollingRetErrorCount,
     longPollingOffCallbackFlag,
     curLongPollingStatus,
     LONG_POLLING_MAX_RET_ERROR_COUNT,

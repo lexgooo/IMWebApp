@@ -1,4 +1,4 @@
-import {tool, emotionDataIndexs, emotions, IMAGE_FORMAT, IMAGE_TYPE, SESSION_TYPE, UPLOAD_RES_TYPE, BROWSER_INFO, GROUP_TIP_MAX_USER_COUNT, GROUP_TIP_TYPE, GROUP_TIP_MODIFY_GROUP_INFO_TYPE, log} from './store'
+import {tool, emotionDataIndexs, emotions, IMAGE_FORMAT, IMAGE_TYPE, SESSION_TYPE, UPLOAD_RES_TYPE, GROUP_TIP_MAX_USER_COUNT, GROUP_TIP_TYPE, GROUP_TIP_MODIFY_GROUP_INFO_TYPE, log, store} from './store'
 import { getFileDownUrlV2, getSoundDownUrl, getFileDownUrl } from './methods';
 export default class MsgElemClass {
     // class Msg.Elem
@@ -245,7 +245,7 @@ class SoundClass {
         return this.downUrl;
     };
     toHtml () {
-        if (BROWSER_INFO.type === 'ie' && parseInt(BROWSER_INFO.ver) <= 8) {
+        if (store.BROWSER_INFO.type === 'ie' && parseInt(store.BROWSER_INFO.ver) <= 8) {
             return '[这是一条语音消息]demo暂不支持ie8(含)以下浏览器播放语音,语音URL:' + this.downUrl;
         }
         return '<audio id="uuid_' + this.uuid + '" src="' + this.downUrl + '" controls="controls" onplay="onChangePlayAudio(this)" preload="none"></audio>';

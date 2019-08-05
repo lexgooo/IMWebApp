@@ -1,3 +1,4 @@
+import {store} from './store'
 export default class MsgManagerClass {
     public onMsgCallback: any = null //新消息(c2c和group)回调
 
@@ -208,11 +209,6 @@ export default class MsgManagerClass {
     }
 
     constructor(
-        ipList: any,
-        authkey: any,
-        expireTime: any,
-        longPollingDefaultTimeOut: any,
-        LongPollingId: any,
         proto_getLongPollingId: any,
         proto_longPolling: any,
         LONG_POLLINNG_EVENT_TYPE: any,
@@ -220,7 +216,6 @@ export default class MsgManagerClass {
         ACTION_STATUS: any,
         proto_bigGroupLongPolling: any,
         tool: any,
-        curBigGroupLongPollingRetErrorCount: any,
         CONNECTION_STATUS: any,
         ConnManager: any,
         longPollingPackageTooLargeErrorCode: any,
@@ -228,7 +223,6 @@ export default class MsgManagerClass {
         longPollingKickedErrorCode: any,
         proto_getMsgs: any,
         MsgStore: any,
-        ctx: any,
         SESSION_TYPE: any,
         Session: any,
         Msg: any,
@@ -237,8 +231,6 @@ export default class MsgManagerClass {
         FRIEND_WRITE_MSG_ACTION: any,
         proto_getC2CHistoryMsgs: any,
         proto_getGroupMsgs: any,
-        onLongPullingNotify: any,
-        onAppliedDownloadUrl: any,
         proto_sendMsg: any,
         FRIEND_NOTICE_TYPE: any,
         PROFILE_NOTICE_TYPE: any,
@@ -247,7 +239,6 @@ export default class MsgManagerClass {
         proto_logout: any,
         proto_getIpAndAuthkey: any,
         proto_getJoinedGroupListHigh: any,
-        curLongPollingRetErrorCount: any,
         longPollingOffCallbackFlag: any,
         curLongPollingStatus: any,
         LONG_POLLING_MAX_RET_ERROR_COUNT: any,
@@ -366,22 +357,22 @@ export default class MsgManagerClass {
 
             this.groupSystemMsgsCache = {}
 
-            ipList = [] //文件下载地址
-            authkey = null //文件下载票据
-            expireTime = null //票据超时时间
+            store.ipList = [] //文件下载地址
+            store.authkey = null //文件下载票据
+            store.expireTime = null //票据超时时间
         }
 
         //长轮询
         this.longPolling = (cbOk: any, cbErr: any) => {
             let opts: any = {
-                Timeout: longPollingDefaultTimeOut / 1000,
+                Timeout: store.longPollingDefaultTimeOut / 1000,
                 Cookie: {
                     NotifySeq: this.notifySeq,
                     NoticeSeq: this.noticeSeq
                 }
             }
-            if (LongPollingId) {
-                opts.Cookie.LongPollingId = LongPollingId
+            if (store.LongPollingId) {
+                opts.Cookie.LongPollingId = store.LongPollingId
                 this.doPolling(
                     proto_longPolling,
                     opts,
@@ -392,12 +383,12 @@ export default class MsgManagerClass {
                 )
             } else {
                 proto_getLongPollingId({}, (resp: any) => {
-                    LongPollingId = opts.Cookie.LongPollingId =
+                    store.LongPollingId = opts.Cookie.LongPollingId =
                         resp.LongPollingId
                     //根据回包设置超时时间，超时时长不能>60秒，因为webkit手机端的最长超时时间不能大于60s
-                    longPollingDefaultTimeOut =
+                    store.longPollingDefaultTimeOut =
                         resp.Timeout > 60
-                            ? longPollingDefaultTimeOut
+                            ? store.longPollingDefaultTimeOut
                             : resp.Timeout * 1000
                     this.doPolling(
                         proto_longPolling,
@@ -536,7 +527,7 @@ export default class MsgManagerClass {
                             )
                         }
                     }
-                    curBigGroupLongPollingRetErrorCount = 0
+                    store.curBigGroupLongPollingRetErrorCount = 0
                     //返回连接状态
                     let successInfo = {
                         ActionStatus: ACTION_STATUS.OK,
@@ -559,7 +550,7 @@ export default class MsgManagerClass {
                     } else if (err.ErrorCode !== longPollingTimeOutErrorCode) {
                         log.error(err.ErrorInfo)
                         //记录长轮询返回错误次数
-                        curBigGroupLongPollingRetErrorCount++
+                        store.curBigGroupLongPollingRetErrorCount++
                     }
                     if (err.ErrorCode === longPollingKickedErrorCode) {
                         //登出
@@ -607,7 +598,7 @@ export default class MsgManagerClass {
                     for (let i in msgInfos) {
                         let msgInfo = msgInfos[i]
                         let isSendMsg, id, headUrl
-                        if (msgInfo.From_Account === ctx.identifier) {
+                        if (msgInfo.From_Account === store.ctx.identifier) {
                             //当前用户发送的消息
                             isSendMsg = true
                             id = msgInfo.To_Account //读取接收者信息
@@ -857,7 +848,7 @@ export default class MsgManagerClass {
                         let msgInfo = msgInfos[i]
                         let isSendMsg, id
                         let headUrl = msgInfo.From_AccountHeadurl || ''
-                        if (msgInfo.From_Account === ctx.identifier) {
+                        if (msgInfo.From_Account === store.ctx.identifier) {
                             //当前用户发送的消息
                             isSendMsg = true
                             id = msgInfo.To_Account //读取接收者信息
@@ -1124,18 +1115,18 @@ export default class MsgManagerClass {
                 log.warn('listeners.onKickedEventCall is empty')
             }
             if (listeners.onLongPullingNotify) {
-                onLongPullingNotify = listeners.onLongPullingNotify
+                store.onLongPullingNotify = listeners.onLongPullingNotify
             } else {
                 log.warn('listeners.onKickedEventCall is empty')
             }
 
             if (listeners.onAppliedDownloadUrl) {
-                onAppliedDownloadUrl = listeners.onAppliedDownloadUrl
+                store.onAppliedDownloadUrl = listeners.onAppliedDownloadUrl
             } else {
                 log.warn('listeners.onAppliedDownloadUrl is empty')
             }
 
-            if (!ctx.identifier || !ctx.userSig) {
+            if (!store.ctx.identifier || !store.ctx.userSig) {
                 if (cbOk) {
                     let success = {
                         ActionStatus: ACTION_STATUS.OK,
@@ -1317,7 +1308,7 @@ export default class MsgManagerClass {
             let reportType = groupReportTypeMsg.ReportType
             let toAccount = groupTip.GroupInfo.To_Account
             //过滤本不应该给自己的系统消息
-            //if(!toAccount || toAccount!=ctx.identifier){
+            //if(!toAccount || toAccount!=store.ctx.identifier){
             //    log.error("收到本不应该给自己的系统消息: To_Account="+toAccount);
             //    continue;
             //}
@@ -1436,9 +1427,9 @@ export default class MsgManagerClass {
         this.initIpAndAuthkey = (cbOk: any, cbErr: any) => {
             proto_getIpAndAuthkey(
                 (resp: any) => {
-                    ipList = resp.IpList
-                    authkey = resp.AuthKey
-                    expireTime = resp.ExpireTime
+                    store.ipList = resp.IpList
+                    store.authkey = resp.AuthKey
+                    store.expireTime = resp.ExpireTime
                     if (cbOk) cbOk(resp)
                 },
                 (err: any) => {
@@ -1451,7 +1442,7 @@ export default class MsgManagerClass {
         //初始化我的群当前最大的seq，用于补拉丢失的群消息
         this.initMyGroupMaxSeqs = (cbOk: any, cbErr: any) => {
             let opts = {
-                Member_Account: ctx.identifier,
+                Member_Account: store.ctx.identifier,
                 Limit: 1000,
                 Offset: 0,
                 GroupBaseInfoFilter: ['NextMsgSeq']
@@ -1522,7 +1513,7 @@ export default class MsgManagerClass {
             for (let p in msgs) {
                 let newGroupMsg = msgs[p]
                 //发群消息时，长轮询接口会返回用户自己发的群消息
-                //if(newGroupMsg.From_Account && newGroupMsg.From_Account!=ctx.identifier ){
+                //if(newGroupMsg.From_Account && newGroupMsg.From_Account!=store.ctx.identifier ){
                 if (newGroupMsg.From_Account) {
                     //false-不是主动拉取的历史消息
                     //true-需要保存到sdk本地session,并且需要判重
@@ -1698,7 +1689,7 @@ export default class MsgManagerClass {
                 }
                 let toAccount = groupTip.GroupInfo.To_Account
                 //过滤本不应该给自己的系统消息
-                /*if (!toAccount || toAccount != ctx.identifier) {
+                /*if (!toAccount || toAccount != store.ctx.identifier) {
              log.error("收到本不应该给自己的系统消息: To_Account=" + toAccount);
              continue;
              }*/
@@ -1817,7 +1808,7 @@ export default class MsgManagerClass {
                 let msgInfo = msgInfos[i]
                 let isSendMsg, id
                 let headUrl = msgInfo.From_AccountHeadurl || ''
-                if (msgInfo.From_Account === ctx.identifier) {
+                if (msgInfo.From_Account === store.ctx.identifier) {
                     //当前用户发送的消息
                     isSendMsg = true
                     id = msgInfo.To_Account //读取接收者信息
@@ -1973,7 +1964,7 @@ export default class MsgManagerClass {
                 errObj.ErrorCode === 0 ||
                 errObj.ErrorCode === longPollingTimeOutErrorCode
             ) {
-                curLongPollingRetErrorCount = 0
+                store.curLongPollingRetErrorCount = 0
                 longPollingOffCallbackFlag = false
                 let errorInfo
                 let isNeedCallback = false
@@ -2011,16 +2002,16 @@ export default class MsgManagerClass {
                 }
             } else {
                 //记录长轮询返回解析json错误次数
-                curLongPollingRetErrorCount++
+                store.curLongPollingRetErrorCount++
                 log.warn(
                     'longPolling接口第' +
-                        curLongPollingRetErrorCount +
+                    store.curLongPollingRetErrorCount +
                         '次报错: ' +
                         errObj.ErrorInfo
                 )
                 //累计超过一定次数
                 if (
-                    curLongPollingRetErrorCount <=
+                    store.curLongPollingRetErrorCount <=
                     LONG_POLLING_MAX_RET_ERROR_COUNT
                 ) {
                     setTimeout(this.startNextLongPolling, 100) //
@@ -2112,7 +2103,7 @@ export default class MsgManagerClass {
                     fromAccountHeadurl = null
                 }
             }
-            if (msgInfo.From_Account === ctx.identifier) {
+            if (msgInfo.From_Account === store.ctx.identifier) {
                 //当前用户发送的消息
                 isSendMsg = true
                 id = msgInfo.From_Account //读取接收者信息

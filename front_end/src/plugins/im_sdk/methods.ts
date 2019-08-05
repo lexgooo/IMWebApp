@@ -1,4 +1,6 @@
-import { tool, log } from "./store";
+import { tool, log, ajaxDefaultTimeOut, SRV_HOST, SRV_NAME, SRV_NAME_VER, SDK, DOWNLOAD_FILE, DOWNLOAD_FILE_TYPE, Resources, VERSION_INFO, MsgManager, MsgStore, longPollingTimeOutErrorCode, longPollingKickedErrorCode, CMD_EVENT_ID_MAP, maxApiReportItemCount, ConnManager, ACTION_STATUS, SESSION_TYPE, GROUP_MSG_SUB_TYPE, MSG_ELEMENT_TYPE, ERROR_CODE_CUSTOM } from "./store";
+import {store} from './store'
+import Long from "./long";
 
 let curSeq:any = 0 //消息seq
 let xmlHttpObjSeq = 0 //ajax请求id
@@ -73,12 +75,12 @@ function ajaxRequest (
 
     xmlHttpObj.open(meth, url, true)
     xmlHttpObj.onreadystatechange = function() {
-        if (xmlHttpObj.readyState == 4) {
+        if (xmlHttpObj.readyState === 4) {
             xmlHttpObjMap[xmlHttpObjSeq] = null //清空
-            if (xmlHttpObj.status == 200) {
+            if (xmlHttpObj.status === 200) {
                 if (cbOk) cbOk(xmlHttpObj.responseText)
                 xmlHttpObj = null
-                curLongPollingRetErrorCount = curBigGroupLongPollingRetErrorCount = 0
+                store.curLongPollingRetErrorCount = store.curBigGroupLongPollingRetErrorCount = 0
             } else {
                 xmlHttpObj = null
                 //避免刷新的时候，由于abord ajax引起的错误回调
@@ -86,8 +88,8 @@ function ajaxRequest (
                     let errInfo = '请求服务器失败,请检查你的网络是否正常'
                     let error = tool.getReturnError(errInfo, -2)
                     //if (!isLongPolling && cbErr) cbErr(error);
-                    if (isLongPolling && onLongPullingNotify) {
-                        onLongPullingNotify(error)
+                    if (isLongPolling && store.onLongPullingNotify) {
+                        store.onLongPullingNotify(error)
                     }
                     if (cbErr) cbErr(error)
                 }, 16)
@@ -136,8 +138,8 @@ export function ajaxRequestJson(
         function(resp: any) {
             let json = null
             if (resp) json = JSON.parse(resp) //将返回的json字符串转换成json对象
-            if (isLongPolling && onLongPullingNotify) {
-                onLongPullingNotify(json)
+            if (isLongPolling && store.onLongPullingNotify) {
+                store.onLongPullingNotify(json)
             }
             if (cbOk) cbOk(json)
         },
@@ -146,7 +148,7 @@ export function ajaxRequestJson(
 }
 //判断用户是否已登录
 export function isLogin () {
-    return ctx.sdkAppID && ctx.identifier
+    return store.ctx.sdkAppID && store.ctx.identifier
 }
 //检查是否登录
 export function checkLogin (cbErr: any, isNeedCallBack: any) {
@@ -164,7 +166,7 @@ export function checkLogin (cbErr: any, isNeedCallBack: any) {
 
 //检查是否访问正式环境
 export function isAccessFormalEnv () {
-    return isAccessFormaEnvironment
+    return store.isAccessFormaEnvironment
 }
 
 //根据不同的服务名和命令，获取对应的接口地址
@@ -176,11 +178,11 @@ export function getApiUrl (srvName: any, cmd: any, cbOk: any, cbErr: any) {
         srvHost = SRV_HOST.TEST.COMMON
     }
 
-    //if (srvName == SRV_NAME.RECENT_CONTACT) {
+    //if (srvName === SRV_NAME.RECENT_CONTACT) {
     //    srvHost = SRV_HOST.TEST.COMMON;
     //}
 
-    if (srvName == SRV_NAME.PIC) {
+    if (srvName === SRV_NAME.PIC) {
         if (isAccessFormalEnv()) {
             srvHost = SRV_HOST.FORMAL.PIC
         } else {
@@ -204,15 +206,15 @@ export function getApiUrl (srvName: any, cmd: any, cbOk: any, cbErr: any) {
         SDK.PLAATFORM
 
     if (isLogin()) {
-        if (cmd == 'login' || cmd == 'accesslayer') {
+        if (cmd === 'login' || cmd === 'accesslayer') {
             url +=
                 '&identifier=' +
-                encodeURIComponent(ctx.identifier) +
+                encodeURIComponent(store.ctx.identifier) +
                 '&usersig=' +
-                ctx.userSig
+                store.ctx.userSig
         } else {
-            if (ctx.tinyid && ctx.a2) {
-                url += '&tinyid=' + ctx.tinyid + '&a2=' + ctx.a2
+            if (store.ctx.tinyid && store.ctx.a2) {
+                url += '&tinyid=' + store.ctx.tinyid + '&a2=' + store.ctx.a2
             } else {
                 if (cbErr) {
                     log.error('tinyid或a2为空[' + srvName + '][' + cmd + ']')
@@ -226,15 +228,15 @@ export function getApiUrl (srvName: any, cmd: any, cbOk: any, cbErr: any) {
                 }
             }
         }
-        url += '&contenttype=' + ctx.contentType
+        url += '&contenttype=' + store.ctx.contentType
     }
     url +=
         '&sdkappid=' +
-        ctx.sdkAppID +
+        store.ctx.sdkAppID +
         '&accounttype=' +
-        ctx.accountType +
+        store.ctx.accountType +
         '&apn=' +
-        ctx.apn +
+        store.ctx.apn +
         '&reqtime=' +
         unixtime()
     return url
@@ -243,17 +245,17 @@ export function getApiUrl (srvName: any, cmd: any, cbOk: any, cbErr: any) {
 //获取语音下载url
 export function getSoundDownUrl (uuid: any, senderId: any) {
     let soundUrl = null
-    if (authkey && ipList[0]) {
-        // soundUrl = "http://" + ipList[0] + "/asn.com/stddownload_common_file?authkey=" + authkey + "&bid=" + DOWNLOAD_FILE.BUSSINESS_ID + "&subbid=" + ctx.sdkAppID + "&fileid=" + uuid + "&filetype=" + DOWNLOAD_FILE_TYPE.SOUND + "&openid=" + senderId + "&ver=0";
+    if (store.authkey && store.ipList[0]) {
+        // soundUrl = "http://" + store.ipList[0] + "/asn.com/stddownload_common_file?authkey=" + store.authkey + "&bid=" + DOWNLOAD_FILE.BUSSINESS_ID + "&subbid=" + store.ctx.sdkAppID + "&fileid=" + uuid + "&filetype=" + DOWNLOAD_FILE_TYPE.SOUND + "&openid=" + senderId + "&ver=0";
         soundUrl =
             'https://' +
             DOWNLOAD_FILE.SOUND_SERVER_DOMAIN +
             '/asn.com/stddownload_common_file?authkey=' +
-            authkey +
+            store.authkey +
             '&bid=' +
             DOWNLOAD_FILE.BUSSINESS_ID +
             '&subbid=' +
-            ctx.sdkAppID +
+            store.ctx.sdkAppID +
             '&fileid=' +
             uuid +
             '&filetype=' +
@@ -270,16 +272,16 @@ export function getSoundDownUrl (uuid: any, senderId: any) {
 //获取文件下载地址
 export function getFileDownUrl (uuid: any, senderId: any, fileName: any) {
     let fileUrl = null
-    if (authkey && ipList[0]) {
+    if (store.authkey && store.ipList[0]) {
         fileUrl =
             'http://' +
-            ipList[0] +
+            store.ipList[0] +
             '/asn.com/stddownload_common_file?authkey=' +
-            authkey +
+            store.authkey +
             '&bid=' +
             DOWNLOAD_FILE.BUSSINESS_ID +
             '&subbid=' +
-            ctx.sdkAppID +
+            store.ctx.sdkAppID +
             '&fileid=' +
             uuid +
             '&filetype=' +
@@ -319,8 +321,8 @@ export function getFileDownUrlV2 (
                 type: type, // 类型: Number, 0(短视频缩略图), 1(文件), 2(短视频), 3(ptt), 其他待分配
                 uuid: uuid, // 类型: Number, 唯一标识一个文件的uuid
                 version: VERSION_INFO.SERVER_VERSION, // 类型: Number, 架平server版本
-                auth_key: authkey, // 类型: String, 认证签名
-                ip: ipList[0] // 类型: Number, 架平IP
+                auth_key: store.authkey, // 类型: String, 认证签名
+                ip: store.ipList[0] // 类型: Number, 架平IP
             }
         ]
     }
@@ -328,12 +330,12 @@ export function getFileDownUrlV2 (
     proto_applyDownload(
         options,
         function(resp: any) {
-            if (resp.error_code == 0 && resp.response_info) {
+            if (resp.error_code === 0 && resp.response_info) {
                 Resources.downloadMap['uuid_' + options.uuid] =
                     resp.response_info.url
             }
-            if (onAppliedDownloadUrl) {
-                onAppliedDownloadUrl({
+            if (store.onAppliedDownloadUrl) {
+                store.onAppliedDownloadUrl({
                     uuid: options.uuid,
                     url: resp.response_info.url,
                     maps: Resources.downloadMap
@@ -365,7 +367,7 @@ export function clearSdk () {
     clearXmlHttpObjMap()
 
     //当前登录用户
-    ctx = {
+    store.ctx = {
         sdkAppID: null,
         appIDAt3rd: null,
         accountType: null,
@@ -375,22 +377,22 @@ export function clearSdk () {
         contentType: 'json',
         apn: 1
     }
-    opt = {}
+    store.opt = {}
 
     curSeq = 0
 
     //ie8,9采用jsonp方法解决ajax跨域限制
-    jsonpRequestId = 0 //jsonp请求id
+    store.jsonpRequestId = 0 //jsonp请求id
     //最新jsonp请求返回的json数据
-    jsonpLastRspData = null
+    store.jsonpLastRspData = null
 
-    apiReportItems = []
+    store.apiReportItems = []
 
     MsgManager.clear()
     MsgStore.clear()
 
     //重置longpollingId
-    LongPollingId = null
+    store.LongPollingId = null
 }
 
 //登录
@@ -403,16 +405,16 @@ export function _login (
 ) {
     clearSdk()
 
-    if (options) opt = options
-    if (opt.isAccessFormalEnv == false) {
+    if (options) store.opt = options
+    if (store.opt.isAccessFormalEnv === false) {
         log.error('请切换为正式环境！！！！')
-        isAccessFormaEnvironment = opt.isAccessFormalEnv
+        store.isAccessFormaEnvironment = store.opt.isAccessFormalEnv
     }
-    if (opt.isLogOn == false) {
-        log.setOn(opt.isLogOn)
+    if (store.opt.isLogOn === false) {
+        log.setOn(store.opt.isLogOn)
     }
-    if (typeof opt.xssFilterEnable !== 'undefined') {
-        xssFilterEnable = opt.xssFilterEnable
+    if (typeof store.opt.xssFilterEnable !== 'undefined') {
+        store.xssFilterEnable = store.opt.xssFilterEnable
     }
     /*
      if(opt.emotions){
@@ -444,7 +446,7 @@ export function _login (
     // }
 
     if (loginInfo.identifier) {
-        ctx.identifier = loginInfo.identifier.toString()
+        store.ctx.identifier = loginInfo.identifier.toString()
     }
     if (loginInfo.identifier && !loginInfo.userSig) {
         if (cbErr) {
@@ -453,12 +455,12 @@ export function _login (
         }
     }
     if (loginInfo.userSig) {
-        ctx.userSig = loginInfo.userSig.toString()
+        store.ctx.userSig = loginInfo.userSig.toString()
     }
-    ctx.sdkAppID = loginInfo.sdkAppID
-    ctx.accountType = Math.ceil(Math.random() * 10000)
+    store.ctx.sdkAppID = loginInfo.sdkAppID
+    store.ctx.accountType = Math.ceil(Math.random() * 10000)
 
-    if (ctx.identifier && ctx.userSig) {
+    if (store.ctx.identifier && store.ctx.userSig) {
         //带登录态
         proto_accesslayer(function() {
             //登录
@@ -485,13 +487,13 @@ export function _login (
 //初始化浏览器信息
 export function initBrowserInfo () {
     //初始化浏览器类型
-    BROWSER_INFO = tool.getBrowserInfo()
+    store.BROWSER_INFO = tool.getBrowserInfo()
     log.info(
-        'BROWSER_INFO: type=' + BROWSER_INFO.type + ', ver=' + BROWSER_INFO.ver
+        'BROWSER_INFO: type=' + store.BROWSER_INFO.type + ', ver=' + store.BROWSER_INFO.ver
     )
-    if (BROWSER_INFO.type == 'ie') {
-        if (parseInt(BROWSER_INFO.ver) < 10) {
-            lowerBR = true
+    if (store.BROWSER_INFO.type === 'ie') {
+        if (parseInt(store.BROWSER_INFO.ver) < 10) {
+            store.lowerBR = true
         }
     }
 }
@@ -499,9 +501,9 @@ export function initBrowserInfo () {
 //接口质量上报
 export function reportApiQuality (cmd: any, errorCode: any, errorInfo: any) {
     if (
-        cmd == 'longpolling' &&
-        (errorCode == longPollingTimeOutErrorCode ||
-            errorCode == longPollingKickedErrorCode)
+        cmd === 'longpolling' &&
+        (errorCode === longPollingTimeOutErrorCode ||
+            errorCode === longPollingKickedErrorCode)
     ) {
         //longpolling 返回60008错误可以视为正常,可以不上报
         return
@@ -514,16 +516,16 @@ export function reportApiQuality (cmd: any, errorCode: any, errorInfo: any) {
             Code: errorCode,
             ErrMsg: errorInfo
         }
-        if (ctx.a2) {
+        if (store.ctx.a2) {
             uniqKey =
-                ctx.a2.substring(0, 10) +
+            store.ctx.a2.substring(0, 10) +
                 '_' +
                 reportTime +
                 '_' +
                 createRandom()
-        } else if (ctx.userSig) {
+        } else if (store.ctx.userSig) {
             uniqKey =
-                ctx.userSig.substring(0, 10) +
+            store.ctx.userSig.substring(0, 10) +
                 '_' +
                 reportTime +
                 '_' +
@@ -538,7 +540,7 @@ export function reportApiQuality (cmd: any, errorCode: any, errorInfo: any) {
                 MsgCmdErrorCode: msgCmdErrorCode
             }
 
-            if (cmd == 'login') {
+            if (cmd === 'login') {
                 let loginApiReportItems: any = []
                 loginApiReportItems.push(rptEvtItem)
                 let loginReportOpt = {
@@ -556,21 +558,21 @@ export function reportApiQuality (cmd: any, errorCode: any, errorInfo: any) {
                     }
                 )
             } else {
-                apiReportItems.push(rptEvtItem)
-                if (apiReportItems.length >= maxApiReportItemCount) {
+                store.apiReportItems.push(rptEvtItem)
+                if (store.apiReportItems.length >= maxApiReportItemCount) {
                     //累计一定条数再上报
                     let reportOpt = {
-                        EvtItems: apiReportItems,
+                        EvtItems: store.apiReportItems,
                         MainVersion: SDK.VERSION,
                         Version: '0'
                     }
                     proto_reportApiQuality(
                         reportOpt,
                         function(resp: any) {
-                            apiReportItems = [] //清空
+                            store.apiReportItems = [] //清空
                         },
                         function(err: any) {
-                            apiReportItems = [] //清空
+                            store.apiReportItems = [] //清空
                         }
                     )
                 }
@@ -606,7 +608,7 @@ export function proto_login (cbOk: any, cbErr: any) {
         },
         function(loginResp: any) {
             if (loginResp.TinyId) {
-                ctx.tinyid = loginResp.TinyId
+                store.ctx.tinyid = loginResp.TinyId
             } else {
                 if (cbErr) {
                     cbErr(tool.getReturnError('TinyId is empty', -10))
@@ -614,7 +616,7 @@ export function proto_login (cbOk: any, cbErr: any) {
                 }
             }
             if (loginResp.A2Key) {
-                ctx.a2 = loginResp.A2Key
+                store.ctx.a2 = loginResp.A2Key
             } else {
                 if (cbErr) {
                     cbErr(tool.getReturnError('A2Key is empty', -11))
@@ -623,8 +625,8 @@ export function proto_login (cbOk: any, cbErr: any) {
             }
             let tag_list = ['Tag_Profile_IM_Nick', 'Tag_Profile_IM_Image']
             let options = {
-                From_Account: ctx.identifier,
-                To_Account: [ctx.identifier],
+                From_Account: store.ctx.identifier,
+                To_Account: [store.ctx.identifier],
                 LastStandardSequence: 0,
                 TagList: tag_list
             }
@@ -646,20 +648,20 @@ export function proto_login (cbOk: any, cbErr: any) {
                                             resp.UserProfileItem[i].ProfileItem[
                                                 j
                                             ].Value
-                                        if (nick) ctx.identifierNick = nick
+                                        if (nick) store.ctx.identifierNick = nick
                                         break
                                     case 'Tag_Profile_IM_Image':
                                         image =
                                             resp.UserProfileItem[i].ProfileItem[
                                                 j
                                             ].Value
-                                        if (image) ctx.headurl = image
+                                        if (image) store.ctx.headurl = image
                                         break
                                 }
                             }
                         }
                     }
-                    if (cbOk) cbOk(ctx.identifierNick, ctx.headurl) //回传当前用户昵称
+                    if (cbOk) cbOk(store.ctx.identifierNick, store.ctx.headurl) //回传当前用户昵称
                 },
                 cbErr
             )
@@ -684,7 +686,7 @@ export function proto_logout (
             })
         return
     }
-    if (type == 'all') {
+    if (type === 'all') {
         ConnManager.apiCall(
             SRV_NAME.OPEN_IM,
             'logout',
@@ -700,7 +702,7 @@ export function proto_logout (
             SRV_NAME.OPEN_IM,
             'longpollinglogout',
             {
-                LongPollingId: LongPollingId
+                LongPollingId: store.LongPollingId
             },
             function(resp: any) {
                 clearSdk()
@@ -718,7 +720,7 @@ export function proto_sendMsg (msg: any, cbOk: any, cbErr: any) {
     switch (msg.sess.type()) {
         case SESSION_TYPE.C2C:
             msgInfo = {
-                From_Account: ctx.identifier,
+                From_Account: store.ctx.identifier,
                 To_Account: msg.sess.id().toString(),
                 MsgTimeStamp: msg.time,
                 MsgSeq: msg.seq,
@@ -731,7 +733,7 @@ export function proto_sendMsg (msg: any, cbOk: any, cbErr: any) {
             let subType = msg.getSubType()
             msgInfo = {
                 GroupId: msg.sess.id().toString(),
-                From_Account: ctx.identifier,
+                From_Account: store.ctx.identifier,
                 Random: msg.random,
                 MsgBody: []
             }
@@ -832,10 +834,10 @@ export function proto_sendMsg (msg: any, cbOk: any, cbErr: any) {
             MsgContent: msgContent
         })
     }
-    if (msg.sess.type() == SESSION_TYPE.C2C) {
+    if (msg.sess.type() === SESSION_TYPE.C2C) {
         //私聊
         ConnManager.apiCall(SRV_NAME.OPEN_IM, 'sendmsg', msgInfo, cbOk, cbErr)
-    } else if (msg.sess.type() == SESSION_TYPE.GROUP) {
+    } else if (msg.sess.type() === SESSION_TYPE.GROUP) {
         //群聊
         ConnManager.apiCall(
             SRV_NAME.GROUP,
@@ -848,7 +850,7 @@ export function proto_sendMsg (msg: any, cbOk: any, cbErr: any) {
 }
 //长轮询接口
 export function proto_longPolling (options: any, cbOk: any, cbErr: any) {
-    // if (!isAccessFormaEnvironment && typeof stopPolling != "undefined" && stopPolling == true) {
+    // if (!store.isAccessFormaEnvironment && typeof stopPolling != "undefined" && stopPolling === true) {
     //     return;
     // }
     if (!checkLogin(cbErr, true)) return
@@ -858,7 +860,7 @@ export function proto_longPolling (options: any, cbOk: any, cbErr: any) {
         options,
         cbOk,
         cbErr,
-        longPollingDefaultTimeOut,
+        store.longPollingDefaultTimeOut,
         true
     )
 }
@@ -898,14 +900,14 @@ export function proto_getMsgs (
         function(resp: any) {
             if (resp.MsgList && resp.MsgList.length) {
                 for (let i in resp.MsgList) {
-                    tempC2CMsgList.push(resp.MsgList[i])
+                    store.tempC2CMsgList.push(resp.MsgList[i])
                 }
             }
-            if (resp.SyncFlag == 1) {
+            if (resp.SyncFlag === 1) {
                 proto_getMsgs(resp.Cookie, resp.SyncFlag, cbOk, cbErr)
             } else {
-                resp.MsgList = tempC2CMsgList
-                tempC2CMsgList = []
+                resp.MsgList = store.tempC2CMsgList
+                store.tempC2CMsgList = []
                 if (cbOk) cbOk(resp)
             }
         },
@@ -965,11 +967,11 @@ export function proto_getC2CHistoryMsgs (options: any, cbOk: any, cbErr: any) {
 
             if (resp.MsgList && resp.MsgList.length) {
                 for (let i in resp.MsgList) {
-                    tempC2CHistoryMsgList.push(resp.MsgList[i])
+                    store.tempC2CHistoryMsgList.push(resp.MsgList[i])
                 }
             }
             let netxOptions = null
-            if (complete == 0) {
+            if (complete === 0) {
                 //还有历史消息可拉取
                 if (rspMsgCount < reqMsgCount) {
                     netxOptions = {
@@ -985,8 +987,8 @@ export function proto_getC2CHistoryMsgs (options: any, cbOk: any, cbErr: any) {
                 //继续拉取
                 proto_getC2CHistoryMsgs(netxOptions, cbOk, cbErr)
             } else {
-                resp.MsgList = tempC2CHistoryMsgList
-                tempC2CHistoryMsgList = []
+                resp.MsgList = store.tempC2CHistoryMsgList
+                store.tempC2CHistoryMsgList = []
                 if (cbOk) cbOk(resp)
             }
         },
@@ -1199,7 +1201,7 @@ export function proto_getPendencyGroup (options: any, cbOk: any, cbErr: any) {
         {
             StartTime: options.StartTime,
             Limit: options.Limit,
-            Handle_Account: ctx.identifier
+            Handle_Account: store.ctx.identifier
         },
         cbOk,
         function(err: any) {}
@@ -1215,7 +1217,7 @@ export function proto_getPendencyGroupRead (options: any, cbOk: any, cbErr: any)
         'report_pendency',
         {
             ReportTime: options.ReportTime,
-            From_Account: ctx.identifier
+            From_Account: store.ctx.identifier
         },
         cbOk,
         function(err: any) {}
@@ -1321,7 +1323,7 @@ export function proto_getGroupPublicInfo (options: any, cbOk: any, cbErr: any) {
                     }
                 }
             }
-            if (resp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (resp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) {
                     cbErr(resp)
                 }
@@ -1605,7 +1607,7 @@ export function convertErrorEn2ZhFriend (resp: any) {
         for (let i in errorAccount) {
             let failCount = errorAccount[i]
             for (let j in resp.ResultItem) {
-                if (resp.ResultItem[j].To_Account == failCount) {
+                if (resp.ResultItem[j].To_Account === failCount) {
                     let resultCode = resp.ResultItem[j].ResultCode
                     resp.ResultItem[j].ResultInfo =
                         '[' + resultCode + ']' + resp.ResultItem[j].ResultInfo
@@ -1624,12 +1626,12 @@ export function proto_applyAddFriend (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'friend_add',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             AddFriendItem: options.AddFriendItem
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1645,13 +1647,13 @@ export function proto_deleteFriend (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'friend_delete',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             To_Account: options.To_Account,
             DeleteType: options.DeleteType
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1664,12 +1666,12 @@ export function proto_deleteFriend (options: any, cbOk: any, cbErr: any) {
 export function proto_deleteChat (options: any, cbOk: any, cbErr: any) {
     if (!checkLogin(cbErr, true)) return
 
-    if (options.chatType == 1) {
+    if (options.chatType === 1) {
         ConnManager.apiCall(
             SRV_NAME.DEL_CHAT,
             'delete',
             {
-                From_Account: ctx.identifier,
+                From_Account: store.ctx.identifier,
                 Type: options.chatType,
                 To_Account: options.To_Account
             },
@@ -1681,7 +1683,7 @@ export function proto_deleteChat (options: any, cbOk: any, cbErr: any) {
             SRV_NAME.DEL_CHAT,
             'delete',
             {
-                From_Account: ctx.identifier,
+                From_Account: store.ctx.identifier,
                 Type: options.chatType,
                 ToGroupid: options.To_Account
             },
@@ -1697,7 +1699,7 @@ export function proto_getPendency (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'pendency_get',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             PendencyType: options.PendencyType,
             StartTime: options.StartTime,
             MaxLimited: options.MaxLimited,
@@ -1714,7 +1716,7 @@ export function proto_getPendencyReport (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'PendencyReport',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             LatestPendencyTimeStamp: options.LatestPendencyTimeStamp
         },
         cbOk,
@@ -1728,13 +1730,13 @@ export function proto_deletePendency (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'pendency_delete',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             PendencyType: options.PendencyType,
             To_Account: options.To_Account
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1750,12 +1752,12 @@ export function proto_responseFriend (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'friend_response',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             ResponseFriendItem: options.ResponseFriendItem
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1771,7 +1773,7 @@ export function proto_getAllFriend (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'friend_get_all',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             TimeStamp: options.TimeStamp,
             StartIndex: options.StartIndex,
             GetCount: options.GetCount,
@@ -1795,7 +1797,7 @@ export function proto_getProfilePortrait (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.PROFILE,
         'portrait_get',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             To_Account: options.To_Account,
             //'LastStandardSequence':options.LastStandardSequence,
             TagList: options.TagList
@@ -1817,7 +1819,7 @@ export function proto_getProfilePortrait (options: any, cbOk: any, cbErr: any) {
                 for (let i in errorAccount) {
                     let failCount = errorAccount[i]
                     for (let j in resp.UserProfileItem) {
-                        if (resp.UserProfileItem[j].To_Account == failCount) {
+                        if (resp.UserProfileItem[j].To_Account === failCount) {
                             let resultCode = resp.UserProfileItem[j].ResultCode
                             resp.UserProfileItem[j].ResultInfo =
                                 '[' +
@@ -1835,7 +1837,7 @@ export function proto_getProfilePortrait (options: any, cbOk: any, cbErr: any) {
                     }
                 }
             }
-            if (resp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (resp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(resp)
             } else if (cbOk) {
                 cbOk(resp)
@@ -1852,14 +1854,14 @@ export function proto_setProfilePortrait (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.PROFILE,
         'portrait_set',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             ProfileItem: options.ProfileItem
         },
         function(resp: any) {
             for (let i in options.ProfileItem) {
                 let profile = options.ProfileItem[i]
-                if (profile.Tag == 'Tag_Profile_IM_Nick') {
-                    ctx.identifierNick = profile.Value //更新昵称
+                if (profile.Tag === 'Tag_Profile_IM_Nick') {
+                    store.ctx.identifierNick = profile.Value //更新昵称
                     break
                 }
             }
@@ -1876,12 +1878,12 @@ export function proto_addBlackList (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'black_list_add',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             To_Account: options.To_Account
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1898,12 +1900,12 @@ export function proto_deleteBlackList (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'black_list_delete',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             To_Account: options.To_Account
         },
         function(resp: any) {
             let newResp = convertErrorEn2ZhFriend(resp)
-            if (newResp.ActionStatus == ACTION_STATUS.FAIL) {
+            if (newResp.ActionStatus === ACTION_STATUS.FAIL) {
                 if (cbErr) cbErr(newResp)
             } else if (cbOk) {
                 cbOk(newResp)
@@ -1920,7 +1922,7 @@ export function proto_getBlackList (options: any, cbOk: any, cbErr: any) {
         SRV_NAME.FRIEND,
         'black_list_get',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             StartIndex: options.StartIndex,
             MaxLimited: options.MaxLimited,
             LastSequence: options.LastSequence
@@ -1937,7 +1939,7 @@ export function proto_getRecentContactList (options: any, cbOk: any, cbErr: any)
         SRV_NAME.RECENT_CONTACT,
         'get',
         {
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             Count: options.Count
         },
         cbOk,
@@ -1959,7 +1961,7 @@ export function proto_uploadPic (options: any, cbOk: any, cbErr: any) {
         cmdName,
         {
             App_Version: VERSION_INFO.APP_VERSION,
-            From_Account: ctx.identifier,
+            From_Account: store.ctx.identifier,
             To_Account: options.To_Account,
             Seq: options.Seq,
             Timestamp: options.Timestamp,
@@ -1968,7 +1970,7 @@ export function proto_uploadPic (options: any, cbOk: any, cbErr: any) {
             File_Size: options.File_Size,
             File_Type: options.File_Type,
             Server_Ver: VERSION_INFO.SERVER_VERSION,
-            Auth_Key: authkey,
+            Auth_Key: store.authkey,
             Busi_Id: options.Busi_Id,
             PkgFlag: options.PkgFlag,
             Slice_Offset: options.Slice_Offset,

@@ -1,3 +1,5 @@
+import { store } from "./store";
+
 export default class WebIm {
     public SESSION_TYPE: any
     public MSG_MAX_LENGTH: any
@@ -99,7 +101,6 @@ export default class WebIm {
         GROUP_SYSTEM_TYPE: any,
         FRIEND_NOTICE_TYPE: any,
         GROUP_TIP_MODIFY_GROUP_INFO_TYPE: any,
-        BROWSER_INFO: any,
         emotions: any,
         emotionDataIndexs: any,
         TLS_ERROR_CODE: any,
@@ -164,7 +165,6 @@ export default class WebIm {
         unixtime: any,
         createRandom: any,
         proto_uploadPic: any,
-        jsonpLastRspData: any,
         proto_getLongPollingId: any,
         proto_applyDownload: any,
         checkLogin: any
@@ -203,7 +203,7 @@ export default class WebIm {
         this.GROUP_TIP_MODIFY_GROUP_INFO_TYPE = GROUP_TIP_MODIFY_GROUP_INFO_TYPE
 
         //浏览器信息
-        this.BROWSER_INFO = BROWSER_INFO
+        this.BROWSER_INFO = store.BROWSER_INFO
 
         //表情对象
         this.EmotionPicData = emotions
@@ -552,7 +552,7 @@ export default class WebIm {
 
         //设置jsonp返回的值
         this.setJsonpLastRspData = (rspData: any) => {
-            jsonpLastRspData =
+            store.jsonpLastRspData =
                 typeof rspData === 'string' ? JSON.parse(rspData) : rspData
         }
 

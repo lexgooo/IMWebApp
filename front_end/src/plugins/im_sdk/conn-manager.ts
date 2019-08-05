@@ -1,3 +1,5 @@
+import { store } from "./store";
+
 export class HConnManager {
     public init: any
     public callBack: any
@@ -101,7 +103,7 @@ export class LConnManager {
     public callBack: any
     public clear: any
     public apiCall: any
-    constructor(onConnCallback:any = null, getApiUrl:any, jsonpRequestId:any, jsonpCallback:any, jsonpLastRspData:any, ACTION_STATUS:any, longPollingTimeOutErrorCode:any, log:any) {
+    constructor(onConnCallback:any = null, getApiUrl:any, jsonpCallback:any, ACTION_STATUS:any, longPollingTimeOutErrorCode:any, log:any) {
         this.init = (onConnNotify:any, cbOk:any, cbErr:any) => {
             if (onConnNotify) onConnCallback = onConnNotify
         }
@@ -125,7 +127,7 @@ export class LConnManager {
             let url = getApiUrl(type, cmd, cbOk, cbErr)
             if (url === false) return
             //发起jsonp请求
-            let reqId = jsonpRequestId++,
+            let reqId = store.jsonpRequestId++,
                 cbkey = 'jsonpcallback', // the 'callback' key
                 cbval:any = 'jsonpRequest' + reqId, // the 'callback' value
                 script: any = document.createElement('script'),
@@ -164,7 +166,7 @@ export class LConnManager {
                 script.onload = script.onreadystatechange = null
                 script.onclick && script.onclick()
                 // Call the user callback with the last value stored and clean up values and scripts.
-                let resp = jsonpLastRspData
+                let resp = store.jsonpLastRspData
                 let info =
                     '\n request url: \n' +
                     url +
@@ -187,7 +189,7 @@ export class LConnManager {
                     }
                     cbErr && cbErr(resp)
                 }
-                jsonpLastRspData = undefined
+                store.jsonpLastRspData = undefined
                 document.body.removeChild(script)
                 loaded = 1
             }

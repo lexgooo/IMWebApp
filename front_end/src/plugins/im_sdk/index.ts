@@ -10,7 +10,6 @@ import {
     GROUP_SYSTEM_TYPE,
     FRIEND_NOTICE_TYPE,
     GROUP_TIP_MODIFY_GROUP_INFO_TYPE,
-    BROWSER_INFO,
     emotions,
     emotionDataIndexs,
     TLS_ERROR_CODE,
@@ -28,8 +27,7 @@ import {
     UPLOAD_RES_PKG_FLAG,
     FileUploader,
     jsonpCallback,
-    MsgManager,
-    jsonpLastRspData
+    MsgManager
 } from './store'
 import {
     initBrowserInfo,
@@ -95,7 +93,6 @@ const webim = new WebIm(
     GROUP_SYSTEM_TYPE,
     FRIEND_NOTICE_TYPE,
     GROUP_TIP_MODIFY_GROUP_INFO_TYPE,
-    BROWSER_INFO,
     emotions,
     emotionDataIndexs,
     TLS_ERROR_CODE,
@@ -161,7 +158,6 @@ const webim = new WebIm(
     unixtime,
     createRandom,
     proto_uploadPic,
-    jsonpLastRspData,
     proto_getLongPollingId,
     proto_applyDownload,
     checkLogin

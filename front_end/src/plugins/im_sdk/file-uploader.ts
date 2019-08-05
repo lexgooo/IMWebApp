@@ -1,4 +1,5 @@
 import SparkMD5 from './spark-md5'
+import {store} from './store'
 
 export default class FileUploaderClass {
     private tool: any
@@ -77,13 +78,11 @@ export default class FileUploaderClass {
         tool: any,
         uploadResultIframeId: any,
         isAccessFormalEnv: any,
-        ctx: any,
         VERSION_INFO: any,
         nextSeq:any,
         unixtime:any,
         createRandom:any,
         UPLOAD_RES_PKG_FLAG:any,
-        authkey:any,
         ACTION_STATUS:any,
         UPLOAD_RES_TYPE:any,
         getFileDownUrl:any,
@@ -142,13 +141,13 @@ export default class FileUploaderClass {
                 'https://pic.tim.qq.com/v4/openpic/' +
                 cmdName +
                 '?tinyid=' +
-                ctx.tinyid +
+                store.ctx.tinyid +
                 '&a2=' +
-                ctx.a2 +
+                store.ctx.a2 +
                 '&sdkappid=' +
-                ctx.sdkAppID +
+                store.ctx.sdkAppID +
                 '&accounttype=' +
-                ctx.accountType +
+                store.ctx.accountType +
                 '&contenttype=http'
             form.action = uploadApiUrl
             form.method = 'post'
@@ -164,14 +163,14 @@ export default class FileUploaderClass {
             }
 
             createFormInput('App_Version', VERSION_INFO.APP_VERSION)
-            createFormInput('From_Account', ctx.identifier)
+            createFormInput('From_Account', store.ctx.identifier)
             createFormInput('To_Account', toAccount)
             createFormInput('Seq', nextSeq().toString())
             createFormInput('Timestamp', unixtime().toString())
             createFormInput('Random', createRandom().toString())
             createFormInput('Busi_Id', businessType)
             createFormInput('PkgFlag', UPLOAD_RES_PKG_FLAG.RAW_DATA.toString())
-            createFormInput('Auth_Key', authkey)
+            createFormInput('Auth_Key', store.authkey)
             createFormInput(
                 'Server_Ver',
                 VERSION_INFO.SERVER_VERSION.toString()
@@ -229,7 +228,7 @@ export default class FileUploaderClass {
                     me.timestamp = unixtime() //当前时间戳
                     me.seq = nextSeq() //请求seq
                     me.random = createRandom() //请求随机数
-                    me.fromAccount = ctx.identifier //发送者
+                    me.fromAccount = store.ctx.identifier //发送者
                     me.toAccount = options.To_Account //接收者
                     me.fileMd5 = options.fileMd5 //文件MD5
                     me.businessType = options.businessType //图片或文件的业务类型，群消息:1; c2c消息:2; 个人头像：3; 群头像：4;
@@ -322,7 +321,7 @@ export default class FileUploaderClass {
                                         //如果上传的是文件，下载地址需要sdk内部拼接
                                         tempResp.URL_INFO = getFileDownUrl(
                                             resp.File_UUID,
-                                            ctx.identifier,
+                                            store.ctx.identifier,
                                             me.file.name
                                         )
                                     }
