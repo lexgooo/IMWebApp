@@ -32,17 +32,18 @@ export default class Login extends Component<{}, {}> {
     }
 
     private handleSubmit(): any {
-        const params = {
-            userId: this.state.userId,
-            password: this.state.password
-        }
-        login(params).then((res:any) => {
-            debugger
-            console.log(res)
-        }).catch((err:any) => {
-            debugger
-            console.log(err)
-        })
+        debugger
+        // const params = {
+        //     userId: this.state.userId,
+        //     password: this.state.password
+        // }
+        // login(params).then((res:any) => {
+        //     debugger
+        //     console.log(res)
+        // }).catch((err:any) => {
+        //     debugger
+        //     console.log(err)
+        // })
     }
 
     public render() {
@@ -72,7 +73,7 @@ export default class Login extends Component<{}, {}> {
                         placeholder='请输入登录密码'
                     />
                     <Button
-                        onClick={() => this.handleSubmit()}
+                        // onClick={() => this.handleSubmit()}
                         style={{
                             marginTop: '65px'
                         }}
