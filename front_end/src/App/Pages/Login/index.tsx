@@ -36,14 +36,13 @@ export default class Login extends Component<{}, {}> {
             userId: this.state.userId,
             password: this.state.password
         }
-        debugger
         login(params).then((res:any) => {
             debugger
             console.log(res)
         }).catch((err:any) => {
+            debugger
             console.log(err)
         })
-        return
     }
 
     public render() {

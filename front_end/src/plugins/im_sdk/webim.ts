@@ -1,4 +1,5 @@
-import { store } from "./store";
+import { store, ConnManager } from "./store";
+import { _login } from "./methods";
 
 export default class WebIm {
     public SESSION_TYPE: any
@@ -114,9 +115,7 @@ export default class WebIm {
         Session: any,
         MsgStore: any,
         Resources: any,
-        ConnManager: any,
         jsonpCallback: any,
-        _login: any,
         proto_logout: any,
         MsgManager: any,
         proto_groupMsgReaded: any,
@@ -279,6 +278,7 @@ export default class WebIm {
             //设置ie9以下浏览器jsonp回调
             if (listeners.jsonpCallback) jsonpCallback = listeners.jsonpCallback
             //登录
+            debugger
             _login(loginInfo, listeners, opts, cbOk, cbErr)
         }
         //登出

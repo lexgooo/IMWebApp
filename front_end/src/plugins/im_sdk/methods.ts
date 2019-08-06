@@ -403,6 +403,7 @@ export function _login (
     cbOk: any,
     cbErr: any
 ) {
+    debugger
     clearSdk()
 
     if (options) store.opt = options
@@ -462,12 +463,12 @@ export function _login (
 
     if (store.ctx.identifier && store.ctx.userSig) {
         //带登录态
-        proto_accesslayer(function() {
+        proto_accesslayer(() => {
             //登录
-            proto_login(function(identifierNick: any, headurl: any) {
+            proto_login((identifierNick: any, headurl: any) => {
                 MsgManager.init(
                     listeners,
-                    function(mmInitResp: any) {
+                    (mmInitResp: any) => {
                         if (cbOk) {
                             mmInitResp.identifierNick = identifierNick
                             mmInitResp.headurl = headurl

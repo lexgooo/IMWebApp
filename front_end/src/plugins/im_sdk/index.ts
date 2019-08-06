@@ -107,12 +107,11 @@ const webim = new WebIm(
     Session,
     MsgStore,
     Resources,
-    ConnManager,
     FileUploader,
     MsgManager,
 
     jsonpCallback,
-    _login,
+
     proto_logout,
     proto_groupMsgReaded,
     proto_createGroup,

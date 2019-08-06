@@ -1,6 +1,7 @@
 import * as React from 'react'
 import ProfileCard from '../../Components/ProfileCard'
 import Button from '../../Components/Button'
+const Cookies = require('js-cookie')
 export interface profileProps {
     history: any
 }
@@ -13,6 +14,8 @@ export default class Profile extends React.Component<profileProps, {}> {
         }
     }
     private handleExit(history:any):any {
+        Cookies.remove('UserID')
+        Cookies.remove('UserSig')
         history.replace('/login')
     }
     public render():object {

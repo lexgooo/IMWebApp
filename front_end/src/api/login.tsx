@@ -9,9 +9,7 @@ export interface loginParams {
     password: string
 }
 export function login(params: loginParams): any {
-    debugger
     return new Promise((resolve, reject) => {
-        debugger
         let datas: {
             userList: any[]
         } = require('./datas.json')
@@ -22,24 +20,25 @@ export function login(params: loginParams): any {
         } = {}
         userList.forEach(item => {
             if (item.UserID === params.userId) {
-                Cookies.set('UserID', item.UserID)
-                Cookies.set('UserSig', item.UserSig)
                 accountInfo = item
             }
         })
-        debugger
         if (accountInfo.UserID) {
             debugger
-            loginIM(accountInfo)
+            loginIM(accountInfo).then((res:any) => {
+                debugger
+                resolve(res)
+            }).catch((err:any) => {
+                debugger
+                reject(err)
+            })
         } else {
-            debugger
             reject('找不到用户')
         }
     })
 }
 
 function loginIM(params: { UserID?: string; UserSig?: string }) {
-    debugger
     return new Promise((resolve, reject) => {
         const loginInfo = Object.assign(imLoginfo, {
             identifier: params.UserID,
@@ -50,12 +49,16 @@ function loginIM(params: { UserID?: string; UserSig?: string }) {
             isAccessFormalEnv: false,
             isLogOn: true
         }
+        debugger
         webim.login(loginInfo, listeners, options, (res:any) => {
             debugger
-            resolve()
-        }, (err:any) => [
+            Cookies.set('UserID', params.UserID)
+            Cookies.set('UserSig', params.UserSig)
+            resolve(res)
+        }, (err:any) => {
+            debugger
             reject(err)
-        ])
+        })
     })
 }
 
