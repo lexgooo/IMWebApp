@@ -2,6 +2,7 @@
 var Version = '1.7.3';
 /* webim javascript SDK
  */
+const SparkMD5 = require('./spark-md5');
 (function (global, factory) {
 
     global["Long"] = factory();
@@ -1364,6 +1365,7 @@ var webim = { // namespace object webim
 };
 window.webim = webim;
 
+export default webim
 /* webim API implementation
  */
 (function (webim) {

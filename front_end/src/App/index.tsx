@@ -26,7 +26,7 @@ export default class App extends React.Component<{}, {}> {
                         )
                     })}
                 </div>
-                {/* <Redirect from='/' to={this.isLogin ? '/msglist' : '/login'} /> */}
+                <Redirect from='/' to={this.isLogin ? '/msglist' : '/login'} />
             </Router>
         )
     }

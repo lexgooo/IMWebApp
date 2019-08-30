@@ -1,4 +1,3 @@
-import webim from '../plugins/im_sdk'
 const Cookies = require('js-cookie')
 
 let imLoginfo: { sdkAppID: string; identifier?: string; userSig?: string } = {
@@ -46,17 +45,14 @@ function loginIM(params: { UserID?: string; UserSig?: string }) {
         })
         const listeners = { onMsgNotify }
         const options = {
-            isAccessFormalEnv: false,
+            isAccessFormalEnv: true,
             isLogOn: true
         }
-        debugger
-        webim.login(loginInfo, listeners, options, (res:any) => {
-            debugger
+        window.webim.login(loginInfo, listeners, options, (res:any) => {
             Cookies.set('UserID', params.UserID)
             Cookies.set('UserSig', params.UserSig)
             resolve(res)
         }, (err:any) => {
-            debugger
             reject(err)
         })
     })
