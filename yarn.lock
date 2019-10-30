@@ -222,6 +222,13 @@ concat-map@0.0.1:
   resolved "https://registry.npm.taobao.org/concat-map/download/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
+cos-js-sdk-v5@^0.5.20:
+  version "0.5.20"
+  resolved "https://registry.yarnpkg.com/cos-js-sdk-v5/-/cos-js-sdk-v5-0.5.20.tgz#2a1b44650cd827a108beed5a0ef6b607deab4307"
+  integrity sha512-aD4MUOJLz/7upW0gQ8woDTL/bgu39ha4lmKvqOvVPdGKlCMYYhkU0VTx/kHdSX94/Z3+1p3PnQOyB6kt+Zum6A==
+  dependencies:
+    xmldom "^0.1.27"
+
 css-color-keywords@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/css-color-keywords/-/css-color-keywords-1.0.0.tgz#fea2616dc676b2962686b3af8dbdbe180b244e05"
@@ -474,6 +481,11 @@ supports-color@^5.3.0, supports-color@^5.5.0:
   dependencies:
     has-flag "^3.0.0"
 
+tim-js-sdk@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/tim-js-sdk/-/tim-js-sdk-2.1.2.tgz#eb1dea1cfa90ae51c32b9375d283ffd48d8b3817"
+  integrity sha512-hJi9AsRx+IGKgLyL+bHbo/jIKMubPLFB5zv1b0FPNwgX558NTycrTrvPx5jkOMQC+xYqLqknN0KRGKtSOaFYvw==
+
 to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-2.0.0.tgz#dc5e698cbd079265bc73e0377681a4e4e83f616e"
@@ -488,3 +500,8 @@ wrappy@1:
   version "1.0.2"
   resolved "https://registry.npm.taobao.org/wrappy/download/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+
+xmldom@^0.1.27:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
+  integrity sha1-1QH5ezvbQDr4757MIFcxh6rawOk=
